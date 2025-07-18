@@ -40,16 +40,14 @@ public class CentralTouristController {
             )
     })
     @GetMapping("/center-tourist")
-    public ResponseEntity<List<CentralTouristInfo>> getCentralTourist(@Parameter(description = "페이지 번호", example = "1") @RequestParam String pageNo,
-                                                                      @Parameter(description = "한 페이지 결과 수", example = "10") @RequestParam String numOfRows,
-                                                                      @Parameter(description = "지역 코드", example = "11") @RequestParam String areaCd,
+    public ResponseEntity<List<CentralTouristInfo>> getCentralTourist(@Parameter(description = "지역 코드", example = "11") @RequestParam String areaCd,
                                                                       @Parameter(description = "시군구 코드", example = "11530") @RequestParam String signguCd) {
 
         log.info("GET /api/tourism-focus 요청: areaCd={}, signguCd={}", areaCd, signguCd);
 
         List<CentralTouristInfo> response;
 
-        response = ctService.getCentralTouristInfo(pageNo, numOfRows, areaCd, signguCd);
+        response = ctService.getCentralTouristInfo(areaCd, signguCd);
 
         if (response == null || response.isEmpty()) {
             log.warn("중심 관광지 데이터 없음 → 404 반환");

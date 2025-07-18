@@ -2,11 +2,14 @@ package com.project.tourpicture.dao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Entity
 @Getter
 @Setter
 @ToString
@@ -41,6 +44,7 @@ public class CentralTouristInfo {
     @Schema(description = "시군구 명", example = "구로구")
     private String signguNm;
 
+    @Id
     @JsonProperty("hubTatsCd")
     @Schema(description = "중심 관광지 코드", example = "b5ef6787d594080cd54b65a9bc884a9b")
     private String hubTatsCd;
@@ -59,5 +63,5 @@ public class CentralTouristInfo {
 
     @JsonProperty("hubRank")
     @Schema(description = "중심지 순위", example = "1")
-    private String hubRank;
+    private int hubRank;
 }
