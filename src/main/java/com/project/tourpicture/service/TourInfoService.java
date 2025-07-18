@@ -1,15 +1,19 @@
 package com.project.tourpicture.service;
 
+import com.project.tourpicture.dao.RelatedTourPhoto;
 import com.project.tourpicture.dto.RelatedTourRequestDTO;
 import com.project.tourpicture.dto.RelatedTourResponseDTO;
 import com.project.tourpicture.dto.TourPhotoDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.tourpicture.exception.NotFoundException;
+import com.project.tourpicture.repository.RelatedTourPhotoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
@@ -24,6 +28,7 @@ public class TourInfoService {
 
     private final RestTemplate restTemplate;
     private final SpacingService spacingService;
+    private final RelatedTourPhotoRepository relatedTourPhotoRepository;
 
     @Value("${api.key}")
     private String serviceKey;
@@ -50,7 +55,7 @@ public class TourInfoService {
         try {
             return parseRelatedTourResponse(response.getBody());
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("해당 관광지의 연관관광지 조회 실패", e);
+            throw new NotFoundException("해당 관광지의 연관관광지를 조회할 수 없습니다.");
         }
     }
 
@@ -75,16 +80,35 @@ public class TourInfoService {
         return results;
     }
 
-    // 관광지별 사진 조회
-    public List<TourPhotoDTO> getTourPhotos(int numOfRows, String keyword) {
-        String word = spacingService.spacingWord(keyword);
+    // 관광지별 대표사진 조회
+    @Transactional
+    public TourPhotoDTO getTourPhotos(String keyword) {
+        RelatedTourPhoto photo = relatedTourPhotoRepository.findByOriginal(keyword.trim())
+                .orElseGet(() -> savePhoto(keyword.trim()));
 
-        List<TourPhotoDTO> results = requestTourPhotos(numOfRows, word);
+        TourPhotoDTO dto = new TourPhotoDTO();
+        dto.setImageUrl(photo.getImageUrl());
+        dto.setTakenMonth(photo.getTakenMonth());
+        return dto;
+    }
 
-        if (results.isEmpty()) {
-            results = requestTourPhotos(numOfRows, word);
+    // 관광지별 대표사진 저장
+    private RelatedTourPhoto savePhoto(String keyword) {
+        String spaced = spacingService.spacingWord(keyword.trim());
+        RelatedTourPhoto relatedTourPhoto = new RelatedTourPhoto();
+        relatedTourPhoto.setOriginal(keyword.trim());
+        relatedTourPhoto.setSpaced(spaced);
+
+        List<TourPhotoDTO> photos = requestTourPhotos(1, spaced);
+        if (photos.isEmpty()) {
+            throw new NotFoundException("대표 사진을 찾을 수 없습니다.");
         }
-        return results;
+
+        TourPhotoDTO dto = photos.get(0);
+        relatedTourPhoto.setImageUrl(dto.getImageUrl());
+        relatedTourPhoto.setTakenMonth(dto.getTakenMonth());
+        relatedTourPhotoRepository.save(relatedTourPhoto);
+        return relatedTourPhoto;
     }
 
     // 관광지별 사진 요청
@@ -96,7 +120,7 @@ public class TourInfoService {
                 .queryParam("MobileOS", "WEB")
                 .queryParam("MobileApp", "TourApp")
                 .queryParam("arrange", "B")
-                .queryParam("keyword", UriUtils.encodeQueryParam(word, "UTF-8"))
+                .queryParam("keyword", UriUtils.encodeQueryParam(word.trim(), "UTF-8"))
                 .queryParam("_type", "json")
                 .build(true)
                 .toUri();
