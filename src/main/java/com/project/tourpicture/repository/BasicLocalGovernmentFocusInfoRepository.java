@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface BasicLocalGovernmentFocusInfoRepository extends JpaRepository<BasicLocalGovernmentFocusInfo, Long> {
-    List<BasicLocalGovernmentFocusInfo> findBySignguCd(String signguCd);
     List<BasicLocalGovernmentFocusInfo> findBySignguCdStartingWith(String areaCd);
 }
