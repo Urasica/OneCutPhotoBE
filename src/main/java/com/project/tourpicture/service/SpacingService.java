@@ -1,46 +1,26 @@
 package com.project.tourpicture.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.openkoreantext.processor.OpenKoreanTextProcessorJava;
+import org.openkoreantext.processor.tokenizer.KoreanTokenizer;
 import org.springframework.stereotype.Service;
+import scala.collection.Seq;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 public class SpacingService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    public String spacingWord(String input) {
+        //정규화
+        CharSequence normalized = OpenKoreanTextProcessorJava.normalize(input);
 
-    public String spacingWord(String word) {
-        try {
-            HttpClient client = HttpClient.newHttpClient();
+        //토큰화
+        Seq<KoreanTokenizer.KoreanToken> tokens = OpenKoreanTextProcessorJava.tokenize(normalized);
 
-            String jsonInput = String.format("{\"text\":\"%s\"}", word);
+        //토큰에서 문자열만 추출
+        List<String> tokenStrings = OpenKoreanTextProcessorJava.tokensToJavaStringList(tokens);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:5000/spacing"))
-                    .header("Content-Type", "application/json; charset=UTF-8")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonInput, StandardCharsets.UTF_8))
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-
-            if (response.statusCode() == 200) {
-                String body = response.body();
-
-                // JSON 파싱
-                JsonNode root = objectMapper.readTree(body);
-                return root.get("result").asText();
-
-            } else {
-                return "Error: HTTP " + response.statusCode();
-            }
-        } catch (Exception e) {
-            return "Exception: " + e.getMessage();
-        }
+        //문자열 토큰을 공백으로 join하여 띄어쓰기 적용
+        return String.join(" ", tokenStrings);
     }
 }

@@ -61,16 +61,13 @@ public class TourInfoService {
 
         for (JsonNode item : items) {
             RelatedTourResponseDTO dto = new RelatedTourResponseDTO();
-            String rlteTatsNm = item.path("rlteTatsNm").textValue();
-            dto.setRelatedTourName(rlteTatsNm);
+            dto.setRelatedTourName(item.path("rlteTatsNm").textValue());
             dto.setRelatedTourAreaName(item.path("rlteRegnNm").textValue());
             dto.setRelatedTourAreaCode(item.path("rlteRegnCd").textValue());
             dto.setRelatedTourSigunguName(item.path("rlteSignguNm").textValue());
             dto.setRelatedTourSigunguCode(item.path("rlteSignguCd").textValue());
             dto.setRelatedTourCategoryLarge(item.path("rlteCtgryLclsNm").textValue());
             dto.setRelatedTourCategorySmall(item.path("rlteCtgrySclsNm").textValue());
-            UriUtils.encodeQueryParam(item.path("rlteTatsNm").textValue(), "UTF-8");
-            dto.setPhoto(getTourPhotos(1, UriUtils.encodeQueryParam(rlteTatsNm, "UTF-8")));
 
             results.add(dto);
         }
@@ -82,6 +79,16 @@ public class TourInfoService {
     public List<TourPhotoDTO> getTourPhotos(int numOfRows, String keyword) {
         String word = spacingService.spacingWord(keyword);
 
+        List<TourPhotoDTO> results = requestTourPhotos(numOfRows, word);
+
+        if (results.isEmpty()) {
+            results = requestTourPhotos(numOfRows, word);
+        }
+        return results;
+    }
+
+    // 관광지별 사진 요청
+    private List<TourPhotoDTO> requestTourPhotos(int numOfRows, String word) {
         URI uri = UriComponentsBuilder.fromHttpUrl("https://apis.data.go.kr/B551011/PhotoGalleryService1/gallerySearchList1")
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("numOfRows", numOfRows)
@@ -94,42 +101,13 @@ public class TourInfoService {
                 .build(true)
                 .toUri();
 
-        // 1차 요청
         ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
-        List<TourPhotoDTO> results;
+
         try {
-            results = parseTourPhotoResponse(response.getBody());
+            return parseTourPhotoResponse(response.getBody());
         } catch (JsonProcessingException e) {
             throw new RuntimeException("해당 관광지의 사진 조회 실패", e);
         }
-
-        // 결과가 비어있으면 재요청
-        if (results.isEmpty()) {
-            System.out.println("[재요청] 관광지 사진이 비어있음. 0.5초 대기 후 재요청합니다.");
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            response = restTemplate.getForEntity(uri, String.class);
-            try {
-                results = parseTourPhotoResponse(response.getBody());
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("재요청 시에도 관광지 사진 조회 실패", e);
-            }
-
-            if (results.isEmpty()) {
-                System.out.println("[재요청 실패] 재요청했지만 여전히 결과가 없습니다.");
-            } else {
-                System.out.println("[재요청 성공] 결과가 있습니다. size = " + results.size());
-            }
-        } else {
-            System.out.println("[정상 응답] size = " + results.size());
-        }
-
-        return results;
     }
 
     // 관광지사진 응답값 파싱
