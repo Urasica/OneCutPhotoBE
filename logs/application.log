@@ -63,3 +63,8 @@
 2025-07-18 20:00:02 [http-nio-8080-exec-3] INFO  c.p.t.c.CentralTouristController - GET /api/tourism-focus 요청: areaCd=11, signguCd=11110
 2025-07-18 20:00:02 [http-nio-8080-exec-3] INFO  c.p.t.service.CentralTouristService - 중심 관광지 API 응답 헤더: resultCode=0000, resultMsg=OK
 2025-07-18 20:00:02 [http-nio-8080-exec-3] INFO  c.p.t.c.CentralTouristController - 중심 관광지 10건 반환
+2025-07-18 21:46:42 [main] INFO  c.p.t.TourPictureApplication - Starting TourPictureApplication using Java 17.0.13 with PID 2408 (C:\Users\limsm\study\OneCutPhotoBE\build\classes\java\main started by limsm in C:\Users\limsm\study\OneCutPhotoBE)
+2025-07-18 21:46:42 [main] INFO  c.p.t.TourPictureApplication - No active profile set, falling back to 1 default profile: "default"
+2025-07-18 21:47:44 [main] INFO  c.p.t.TourPictureApplication - Starting TourPictureApplication using Java 17.0.13 with PID 11324 (C:\Users\limsm\study\OneCutPhotoBE\build\classes\java\main started by limsm in C:\Users\limsm\study\OneCutPhotoBE)
+2025-07-18 21:47:44 [main] INFO  c.p.t.TourPictureApplication - No active profile set, falling back to 1 default profile: "default"
+2025-07-18 21:47:51 [main] INFO  c.p.t.TourPictureApplication - Started TourPictureApplication in 7.815 seconds (process running for 8.47)
