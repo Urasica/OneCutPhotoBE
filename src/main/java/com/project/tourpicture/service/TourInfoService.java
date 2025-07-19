@@ -7,7 +7,6 @@ import com.project.tourpicture.dto.TourPhotoDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.tourpicture.exception.NotFoundException;
 import com.project.tourpicture.repository.RelatedTourPhotoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +54,7 @@ public class TourInfoService {
         try {
             return parseRelatedTourResponse(response.getBody());
         } catch (JsonProcessingException e) {
-            throw new NotFoundException("해당 관광지의 연관관광지를 조회할 수 없습니다.");
+            return null;
         }
     }
 
@@ -101,7 +100,7 @@ public class TourInfoService {
 
         List<TourPhotoDTO> photos = requestTourPhotos(1, spaced);
         if (photos.isEmpty()) {
-            throw new NotFoundException("대표 사진을 찾을 수 없습니다.");
+            return null;
         }
 
         TourPhotoDTO dto = photos.get(0);
