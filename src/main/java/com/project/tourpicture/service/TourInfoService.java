@@ -94,7 +94,8 @@ public class TourInfoService {
 
     // 관광지별 대표사진 저장
     private RelatedTourPhoto savePhoto(String keyword) {
-        String spaced = spacingService.spacingWord(keyword.trim());
+        String trimmed = keyword.trim();
+        String spaced = spacingService.spacingWord(trimmed.contains("/") ? trimmed.split("/")[0] : trimmed);
         RelatedTourPhoto relatedTourPhoto = new RelatedTourPhoto();
         relatedTourPhoto.setOriginal(keyword.trim());
         relatedTourPhoto.setSpaced(spaced);
