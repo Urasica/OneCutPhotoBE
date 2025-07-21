@@ -58,18 +58,17 @@ public class TourInfoController {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/tour-photos")
+    @GetMapping("/photo")
     public ResponseEntity<?> getTourPhotos(
             @Parameter(description = "관광지명", example = "경복궁") @RequestParam String keyword) {
         try {
-            TourPhotoDTO photo = tourInfoService.getTourPhoto(keyword);
-            return ResponseEntity.ok(photo);
+            return ResponseEntity.ok(tourInfoService.getTourPhoto(keyword));
         } catch (ResponseStatusException ex) {
             return getErrorResponseResponseEntity(ex);
         }
     }
 
-    private static ResponseEntity<ErrorResponse> getErrorResponseResponseEntity(ResponseStatusException ex) {
+    public static ResponseEntity<ErrorResponse> getErrorResponseResponseEntity(ResponseStatusException ex) {
         ErrorResponse error = new ErrorResponse(ex.getStatusCode().value(), ex.getReason());
         return ResponseEntity.status(ex.getStatusCode().value()).body(error);
     }
