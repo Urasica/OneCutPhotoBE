@@ -50,7 +50,7 @@ public class LocalGovernmentFocusService {
     public void fetchMetropolitanLocalGovernmentFocus() {
         try {
             String day = LocalDate.now(ZoneId.of("Asia/Seoul"))
-                    .minusMonths(1)
+                    .minusMonths(2)
                     .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
             String url = "https://apis.data.go.kr/B551011/DataLabService/metcoRegnVisitrDDList"
@@ -97,7 +97,7 @@ public class LocalGovernmentFocusService {
     public void fetchBasicLocalGovernmentFocus() {
         try {
             String day = LocalDate.now(ZoneId.of("Asia/Seoul"))
-                    .minusMonths(1)
+                    .minusMonths(2)
                     .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
             String url = "https://apis.data.go.kr/B551011/DataLabService/locgoRegnVisitrDDList"

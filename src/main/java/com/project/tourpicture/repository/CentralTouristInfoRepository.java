@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CentralTouristInfoRepository extends JpaRepository<CentralTouristInfo, String> {
     List<CentralTouristInfo> findByAreaCdAndSignguCdOrderByHubRankAsc(String areaCd, String signguCd);
+
+    List<CentralTouristInfo> findTop5BySignguCdOrderByHubRankAsc(String signguCd);
 }

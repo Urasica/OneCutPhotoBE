@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface RelatedTourPhotoRepository extends JpaRepository<RelatedTourPhoto, Long> {
     Optional<RelatedTourPhoto> findByOriginal(String original);
+
+    Optional<RelatedTourPhoto> findFirstByOriginalContaining(String hubTatsNm);
 }
