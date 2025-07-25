@@ -112,15 +112,22 @@ public class CrowdBasedPhotoService {
     }
 
     public List<CrowdBasedPhotoResponseDTO> getCrowdBasedPhotos(Set<Long> seenIds, int limit) {
-        List<CrowdBasedPhoto> entities;
-        if (seenIds == null || seenIds.isEmpty()) {
-            entities = crowdBasedPhotoRepository.findTop50By();
-        } else {
-            entities = crowdBasedPhotoRepository.findTop50ByPhotoIdNotIn(seenIds);
-        }
+        // 1. 전체 ID 조회 및 랜덤 셔플
+        List<Long> allIds = crowdBasedPhotoRepository.findAllIds(); // 커스텀 쿼리 필요
+        Collections.shuffle(allIds);
+
+        // 2. seenIds 제외 후 limit만큼 추출
+        List<Long> targetIds = allIds.stream()
+                .filter(id -> seenIds == null || !seenIds.contains(id))
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        if (targetIds.isEmpty()) return Collections.emptyList();
+
+        // 3. 해당 ID로 실제 엔티티 조회
+        List<CrowdBasedPhoto> entities = crowdBasedPhotoRepository.findByPhotoIdIn(targetIds);
 
         return entities.stream()
-                .limit(limit)
                 .map(p -> CrowdBasedPhotoResponseDTO.builder()
                         .photoId(p.getPhotoId())
                         .imageUrl(p.getImageUrl())
