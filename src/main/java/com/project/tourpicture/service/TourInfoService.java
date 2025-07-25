@@ -6,15 +6,14 @@ import com.project.tourpicture.dto.TourPhotoDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.tourpicture.exception.NotFoundException;
 import com.project.tourpicture.repository.RelatedTourPhotoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 
@@ -55,7 +54,7 @@ public class TourInfoService {
         try {
             return parseRelatedTourResponse(response.getBody());
         } catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "외부 API 응답 파싱 오류");
+            throw new RuntimeException("외부 API 응답 파싱 오류", e);
         }
     }
 
@@ -95,20 +94,29 @@ public class TourInfoService {
     // 관광지별 대표사진 저장
     private RelatedTourPhoto savePhoto(String keyword) {
         String trimmed = keyword.trim();
-        String spaced = spacingService.spacingWord(trimmed.contains("/") ? trimmed.split("/")[0] : trimmed);
+        String original = trimmed.contains("/") ? trimmed.split("/")[0] : trimmed;
+
+        List<TourPhotoDTO> photos = requestTourPhotos(1, original);
+
+        String spaced = original;
+        if(photos.isEmpty()){
+            spaced = spacingService.spacingWord(original);
+            photos = requestTourPhotos(1, spaced);
+        }
+
+        if(photos.isEmpty()){
+            throw new NotFoundException("관광지 사진을 찾을 수 없음");
+        }
+
         RelatedTourPhoto relatedTourPhoto = new RelatedTourPhoto();
         relatedTourPhoto.setOriginal(keyword.trim());
         relatedTourPhoto.setSpaced(spaced);
-
-        List<TourPhotoDTO> photos = requestTourPhotos(1, spaced);
-        if (photos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "관광지 사진을 찾을 수 없음");
-        }
 
         TourPhotoDTO dto = photos.get(0);
         relatedTourPhoto.setImageUrl(dto.getImageUrl());
         relatedTourPhoto.setTakenMonth(dto.getTakenMonth());
         relatedTourPhotoRepository.save(relatedTourPhoto);
+
         return relatedTourPhoto;
     }
 
