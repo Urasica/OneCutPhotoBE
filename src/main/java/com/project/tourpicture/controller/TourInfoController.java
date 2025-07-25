@@ -3,6 +3,7 @@ package com.project.tourpicture.controller;
 import com.project.tourpicture.dto.ErrorResponse;
 import com.project.tourpicture.dto.RelatedTourResponseDTO;
 import com.project.tourpicture.dto.TourPhotoDTO;
+import com.project.tourpicture.exception.NotFoundException;
 import com.project.tourpicture.service.TourInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,9 +12,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,8 +43,8 @@ public class TourInfoController {
             @Parameter(description = "관광지명", example = "경복궁") @RequestParam String keyword) {
         try {
             return ResponseEntity.ok(tourInfoService.getRelatedTours(numOfRows, baseYm, areaCode, sigunguCode, keyword));
-        } catch (ResponseStatusException ex) {
-            return getErrorResponseResponseEntity(ex);
+        } catch (Exception ex) {
+            return getErrorResponse(ex);
         }
     }
 
@@ -63,13 +64,20 @@ public class TourInfoController {
             @Parameter(description = "관광지명", example = "경복궁") @RequestParam String keyword) {
         try {
             return ResponseEntity.ok(tourInfoService.getTourPhoto(keyword));
-        } catch (ResponseStatusException ex) {
-            return getErrorResponseResponseEntity(ex);
+        } catch (Exception ex) {
+            return getErrorResponse(ex);
         }
     }
 
-    public static ResponseEntity<ErrorResponse> getErrorResponseResponseEntity(ResponseStatusException ex) {
-        ErrorResponse error = new ErrorResponse(ex.getStatusCode().value(), ex.getReason());
-        return ResponseEntity.status(ex.getStatusCode().value()).body(error);
+    public static ResponseEntity<ErrorResponse> getErrorResponse(Exception ex) {
+        int statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+        String reason = ex.getMessage();
+
+        if (ex instanceof NotFoundException) {
+            statusCode = HttpStatus.NOT_FOUND.value();
+        }
+
+        ErrorResponse error = new ErrorResponse(statusCode, reason);
+        return ResponseEntity.status(statusCode).body(error);
     }
 }
