@@ -13,6 +13,11 @@ java {
 	}
 }
 
+bootJar {
+	archiveFileName = 'app.jar'
+}
+
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -28,7 +33,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.openkoreantext:open-korean-text:2.1.0'
 
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	compileOnly 'org.projectlombok:lombok'

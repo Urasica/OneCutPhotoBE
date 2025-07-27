@@ -59,15 +59,6 @@ public class TourInfoController {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/photo")
-    public ResponseEntity<?> getTourPhotos(
-            @Parameter(description = "관광지명", example = "경복궁") @RequestParam String keyword) {
-        try {
-            return ResponseEntity.ok(tourInfoService.getTourPhoto(keyword));
-        } catch (Exception ex) {
-            return getErrorResponse(ex);
-        }
-    }
 
     public static ResponseEntity<ErrorResponse> getErrorResponse(Exception ex) {
         int statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
