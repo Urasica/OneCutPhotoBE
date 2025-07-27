@@ -22,7 +22,6 @@ import java.util.List;
 public class TourInfoService {
 
     private final RestTemplate restTemplate;
-    private final SpacingService spacingService;
 
     @Value("${api.key}")
     private String serviceKey;
