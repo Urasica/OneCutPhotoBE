@@ -3,13 +3,11 @@ package com.project.tourpicture.service;
 import com.project.tourpicture.dao.CentralTouristInfo;
 import com.project.tourpicture.dao.CrowdBasedPhoto;
 import com.project.tourpicture.dao.GovernmentVisitInfo;
-import com.project.tourpicture.dao.RelatedTourPhoto;
 import com.project.tourpicture.dto.CrowdBasedPhotoResponseDTO;
 import com.project.tourpicture.dto.TourPhotoDTO;
 import com.project.tourpicture.repository.CentralTouristInfoRepository;
 import com.project.tourpicture.repository.CrowdBasedPhotoRepository;
 import com.project.tourpicture.repository.GovernmentVisitInfoRepository;
-import com.project.tourpicture.repository.RelatedTourPhotoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +24,6 @@ public class CrowdBasedPhotoService {
     private GovernmentVisitInfoRepository governmentVisitInfoRepository;
     @Autowired
     private CentralTouristInfoRepository centralTouristInfoRepository;
-    @Autowired
-    private RelatedTourPhotoRepository relatedTourPhotoRepository;
     @Autowired
     private TourInfoService tourInfoService;
     @Autowired
