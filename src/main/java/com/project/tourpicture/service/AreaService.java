@@ -4,16 +4,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.tourpicture.dao.AreaEntity;
 import com.project.tourpicture.dao.AreaId;
+import com.project.tourpicture.dto.AreaDTO;
 import com.project.tourpicture.repository.AreaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,6 +32,7 @@ public class AreaService {
     String MobileOS = "WEB";
     String MobileApp = "One-cut-travel";
 
+    @Transactional
     public void fetchAndSaveAllAreas() {
         try {
             log.info("시도(region) 목록 API 호출 시작");
@@ -80,8 +84,8 @@ public class AreaService {
 
                     areaEntities.add(new AreaEntity(
                             new AreaId(areaCd, sigunguCd),
-                            sigunguNm,
-                            areaNm
+                            areaNm,
+                            sigunguNm
                     ));
                 }
 
@@ -96,5 +100,14 @@ public class AreaService {
         } catch (Exception e) {
             log.error("지역 데이터 저장 중 오류 발생", e);
         }
+    }
+
+    public List<AreaDTO> findAllAreaCodes() {
+        return areaRepository.findAll().stream()
+                .map(entity -> new AreaDTO(
+                        entity.getId().getAreaCd(),
+                        entity.getAreaNm()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
