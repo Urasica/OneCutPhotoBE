@@ -80,8 +80,8 @@ public class AreaService {
 
                     areaEntities.add(new AreaEntity(
                             new AreaId(areaCd, sigunguCd),
-                            sigunguNm,
-                            areaNm
+                            areaNm,
+                            sigunguNm
                     ));
                 }
 
