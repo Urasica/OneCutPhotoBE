@@ -26,7 +26,7 @@ public class BasicLocalGovernmentFocusInfo {
     @Id
     @JsonProperty("signguCode")
     @Schema(description = "시군구 코드", example = "11110")
-    private String signguCd;
+    private String sigunguCd;
 
     @Id
     @JsonProperty("touDivCd")
@@ -35,7 +35,7 @@ public class BasicLocalGovernmentFocusInfo {
 
     @JsonProperty("signguNm")
     @Schema(description = "시군구 명", example = "종로구")
-    private String signguNm;
+    private String sigunguNm;
 
     @JsonProperty("touDivNm")
     @Schema(description = "관광객 구분명", example = "현지인")

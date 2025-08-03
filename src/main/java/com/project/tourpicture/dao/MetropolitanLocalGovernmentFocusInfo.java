@@ -24,9 +24,9 @@ public class MetropolitanLocalGovernmentFocusInfo {
     private String baseYmd;
 
     @Id
-    @JsonProperty("areaCode")
+    @JsonProperty("areaCd")
     @Schema(description = "시도 코드", example = "11")
-    private String areaCode;
+    private String areaCd;
 
     @Id
     @JsonProperty("touDivCd")

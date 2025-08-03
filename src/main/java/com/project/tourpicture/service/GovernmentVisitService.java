@@ -5,32 +5,24 @@ import com.project.tourpicture.dao.GovernmentVisitInfo;
 import com.project.tourpicture.repository.BasicLocalGovernmentFocusInfoRepository;
 import com.project.tourpicture.repository.GovernmentVisitInfoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class GovernmentVisitService {
-    @Autowired
-    private BasicLocalGovernmentFocusInfoRepository basicLocalGovernmentFocusInfoRepository;
 
-    @Autowired
-    private GovernmentVisitInfoRepository governmentVisitInfoRepository;
+    private final BasicLocalGovernmentFocusInfoRepository basicLocalGovernmentFocusInfoRepository;
 
-    @Autowired
-    private CentralTouristService centralTouristService;
+    private final GovernmentVisitInfoRepository governmentVisitInfoRepository;
 
     public void VisitTouristUpdate() {
         // 시군구 기준으로 그룹화 및 관광객 수 합산
         Map<String, List<BasicLocalGovernmentFocusInfo>> grouped = basicLocalGovernmentFocusInfoRepository.findAll().stream()
                 .collect(Collectors.groupingBy(info ->
-                        info.getBaseYmd() + "|" + info.getSignguCd() + "|" + info.getDaywkDivCd()
+                        info.getBaseYmd() + "|" + info.getSigunguCd() + "|" + info.getDaywkDivCd()
                 ));
 
         List<GovernmentVisitInfo> result = new ArrayList<>();
@@ -46,8 +38,8 @@ public class GovernmentVisitService {
 
             GovernmentVisitInfo info = new GovernmentVisitInfo();
             info.setBaseYmd(sample.getBaseYmd());
-            info.setSignguCd(sample.getSignguCd());
-            info.setSignguNm(sample.getSignguNm());
+            info.setSigunguCd(sample.getSigunguCd());
+            info.setSigunguCd(sample.getSigunguNm());
             info.setDaywkDivCd(sample.getDaywkDivCd());
             info.setDaywkDivNm(sample.getDaywkDivNm());
             info.setTouNum(totalTourists);
@@ -58,21 +50,6 @@ public class GovernmentVisitService {
         if (!result.isEmpty()) {
             governmentVisitInfoRepository.deleteAll();
             governmentVisitInfoRepository.saveAll(result);
-        }
-    }
-
-    // 관광객 집중률이 적은 순으로 지역 가져오기
-    public void fetchLowVisitCentralTourist() {
-        String baseYmd = LocalDate.now(ZoneId.of("Asia/Seoul"))
-                .minusMonths(2)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-        List<GovernmentVisitInfo> lowVisits =
-                governmentVisitInfoRepository.findTop30ByBaseYmdOrderByTouNumAsc(baseYmd);
-
-        for (GovernmentVisitInfo info : lowVisits) {
-            String areaCd = info.getSignguCd().substring(0, 2);
-            centralTouristService.fetchCentralTouristInfo(areaCd, info.getSignguCd());
         }
     }
 }

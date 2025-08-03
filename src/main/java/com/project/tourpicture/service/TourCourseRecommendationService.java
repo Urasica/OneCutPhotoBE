@@ -20,9 +20,9 @@ public class TourCourseRecommendationService {
     private static final String EXCLUDED_CATEGORY = "숙박";
 
     // 추천 코스 조회(해당 지역의 방문률 기준)
-    public List<TourCourseDTO> getCourseByPopularity(String startSpot, String areaCode, String sigunguCode, int numOfCourse) {
-        List<CentralTouristInfo> centralTouristList = getCentralTouristList(areaCode, sigunguCode);
-        CentralTouristInfo startInfo = getTouristInfo(startSpot, areaCode, sigunguCode);
+    public List<TourCourseDTO> getCourseByPopularity(String startSpot, String areaCd, String sigunguCode, int numOfCourse) {
+        List<CentralTouristInfo> centralTouristList = getCentralTouristList(areaCd, sigunguCode);
+        CentralTouristInfo startInfo = getTouristInfo(startSpot, areaCd, sigunguCode);
 
         // 평균 예측 방문률
         Map<String, Double> spotVisitRate = new HashMap<>();
@@ -31,7 +31,7 @@ public class TourCourseRecommendationService {
                 .filter(info -> !info.getHubTatsNm().equals(startSpot))
                 .forEach(info -> {
                     List<TourismFocusInfo> focusList = tourismFocusInfoService.getTourismFocusByName(
-                            "1", "7", areaCode, sigunguCode, info.getHubTatsNm());
+                            "1", "7", areaCd, sigunguCode, info.getHubTatsNm());
                     if (focusList == null || focusList.isEmpty()) return;
                     double avgVisitRate = focusList.stream()
                             .mapToDouble(TourismFocusInfo::getCnctrRate)
@@ -54,7 +54,7 @@ public class TourCourseRecommendationService {
                 .toList();
 
         for (String spot : recommendedSpots) {
-            CentralTouristInfo info = getTouristInfo(spot, areaCode, sigunguCode);
+            CentralTouristInfo info = getTouristInfo(spot, areaCd, sigunguCode);
             TourCourseDTO dto = createTourCourseDTO(spot, info.getMapX(), info.getMapY());
             course.add(dto);
         }
@@ -62,22 +62,22 @@ public class TourCourseRecommendationService {
     }
 
     // 추천 코스 조회(거리 기준)
-    public List<TourCourseDTO> getCourseByDistance(String startSpot, String areaCode, String sigunguCode, int numOfCourse) {
-        CentralTouristInfo startInfo = getTouristInfo(startSpot, areaCode, sigunguCode);
-        List<CentralTouristInfo> spotInfos = getCentralTouristList(areaCode, sigunguCode); //해당 지역의 모든 관광지
+    public List<TourCourseDTO> getCourseByDistance(String startSpot, String areaCd, String sigunguCode, int numOfCourse) {
+        CentralTouristInfo startInfo = getTouristInfo(startSpot, areaCd, sigunguCode);
+        List<CentralTouristInfo> spotInfos = getCentralTouristList(areaCd, sigunguCode); //해당 지역의 모든 관광지
 
         return buildCourseByDistance(startSpot, startInfo, spotInfos, numOfCourse);
     }
 
     // 추천 코스 조회(방문률 + 거리)
-    public List<TourCourseDTO> getCourseByDistanceAndPopularity(String startSpot, String areaCode, String sigunguCode, int numOfCourse) {
-        List<TourCourseDTO> popularTourSpots = getCourseByPopularity(startSpot, areaCode, sigunguCode, 30);
+    public List<TourCourseDTO> getCourseByDistanceAndPopularity(String startSpot, String areaCd, String sigunguCode, int numOfCourse) {
+        List<TourCourseDTO> popularTourSpots = getCourseByPopularity(startSpot, areaCd, sigunguCode, 30);
         popularTourSpots.removeIf(spot -> spot.getTourName().equals(startSpot));
 
-        CentralTouristInfo startInfo = getTouristInfo(startSpot, areaCode, sigunguCode);
+        CentralTouristInfo startInfo = getTouristInfo(startSpot, areaCd, sigunguCode);
 
         List<CentralTouristInfo> spotInfos = popularTourSpots.stream() //방문률 가장 높은 관광지 30개
-                .map(s -> getTouristInfo(s.getTourName(), areaCode, sigunguCode))
+                .map(s -> getTouristInfo(s.getTourName(), areaCd, sigunguCode))
                 .toList();
 
         return buildCourseByDistance(startSpot, startInfo, spotInfos, numOfCourse);
@@ -119,17 +119,17 @@ public class TourCourseRecommendationService {
     }
 
     // 해당 지역의 중심관광지 목록 조회
-    private List<CentralTouristInfo> getCentralTouristList(String areaCode, String sigunguCode) {
+    private List<CentralTouristInfo> getCentralTouristList(String areaCd, String sigunguCode) {
         try {
-            return centralTouristService.getCentralTouristInfo(areaCode, sigunguCode);
+            return centralTouristService.getCentralTouristInfo(areaCd, sigunguCode);
         } catch (RuntimeException e) {
             throw new NotFoundException("지역코드 혹은 시군구코드 입력 오류");
         }
     }
 
     // 관광지 정보 조회
-    private CentralTouristInfo getTouristInfo(String spot, String areaCode, String sigunguCode) {
-        getCentralTouristList(areaCode, sigunguCode);
+    private CentralTouristInfo getTouristInfo(String spot, String areaCd, String sigunguCode) {
+        getCentralTouristList(areaCd, sigunguCode);
         return centralTouristInfoRepository.findByHubTatsNm(spot)
                 .orElseThrow(() -> new NotFoundException("해당 관광지의 위치 정보를 찾을 수 없어 코스 추천 불가"));
     }

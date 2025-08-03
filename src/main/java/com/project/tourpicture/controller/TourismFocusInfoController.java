@@ -46,7 +46,7 @@ public ResponseEntity<List<TourismFocusInfo>> getTourismFocusInfo(@Parameter(des
                                                                   @Parameter(description = "시군구 코드", example = "11110") @RequestParam String signguCd,
                                                                   @Parameter(description = "관광지명 (선택)", example = "경복궁") @RequestParam(required = false) String tAtsNm) {
 
-        log.info("GET /api/tourism-focus 요청: pageNo={}, numOfRows={}, areaCd={}, signguCd={}, tAtsNm={}",
+        log.info("GET /api/tourism-focus 요청: pageNo={}, numOfRows={}, areaCd={}, sigunguCd={}, tAtsNm={}",
                 pageNo, numOfRows, areaCd, signguCd, tAtsNm);
 
         List<TourismFocusInfo> response;

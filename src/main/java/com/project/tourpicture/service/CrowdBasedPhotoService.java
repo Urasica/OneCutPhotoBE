@@ -1,144 +1,119 @@
 package com.project.tourpicture.service;
 
-import com.project.tourpicture.dao.CentralTouristInfo;
 import com.project.tourpicture.dao.CrowdBasedPhoto;
 import com.project.tourpicture.dao.GovernmentVisitInfo;
-import com.project.tourpicture.dto.CrowdBasedPhotoResponseDTO;
-import com.project.tourpicture.dto.TourPhotoDTO;
-import com.project.tourpicture.repository.CentralTouristInfoRepository;
+import com.project.tourpicture.dao.RegionBasedTourist;
 import com.project.tourpicture.repository.CrowdBasedPhotoRepository;
 import com.project.tourpicture.repository.GovernmentVisitInfoRepository;
+import com.project.tourpicture.repository.RegionBasedTouristRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CrowdBasedPhotoService {
-    private static final int MAX_SIZE = 50;
+    private static final int MAX_SIZE = 150;
 
-    @Autowired
-    private GovernmentVisitInfoRepository governmentVisitInfoRepository;
-    @Autowired
-    private CentralTouristInfoRepository centralTouristInfoRepository;
-    @Autowired
-    private TourInfoService tourInfoService;
-    @Autowired
-    private CrowdBasedPhotoRepository crowdBasedPhotoRepository;
+    private final GovernmentVisitInfoRepository governmentVisitInfoRepository;
+    private final RegionBasedTouristRepository regionBasedTouristRepository;
+    private final CrowdBasedPhotoRepository crowdBasedPhotoRepository;
+    private final RegionBasedTouristService regionBasedTouristService;
+
 
     // DB에 사진목록 설정
+    @Transactional
     public void initializePhotoDB() {
-//        Set<Long> usedPhotoIds = new HashSet<>();
-//        List<GovernmentVisitInfo> lowVisitAreas = governmentVisitInfoRepository.findTop30ByOrderByTouNumAsc();
-//        List<TouristAreaEntry> allTouristEntries = new ArrayList<>();
-//
-//        for (GovernmentVisitInfo area : lowVisitAreas) {
-//            List<CentralTouristInfo> touristSpots =
-//                    centralTouristInfoRepository.findTop5BySignguCdOrderByHubRankAsc(area.getSignguCd());
-//
-//            for (CentralTouristInfo spot : touristSpots) {
-//                if (!"관광지".equals(spot.getHubCtgryLclsNm())) continue; // 관광지만 필터링
-//                allTouristEntries.add(new TouristAreaEntry(area, spot));
-//            }
-//        }
-//
-//        Collections.shuffle(allTouristEntries);
-//
-//        for (TouristAreaEntry entry : allTouristEntries) {
-//            GovernmentVisitInfo area = entry.area();
-//            CentralTouristInfo spot = entry.spot();
-//
-//            Optional<RelatedTourPhoto> photoOpt =
-//                    relatedTourPhotoRepository.findFirstByOriginalContaining(spot.getHubTatsNm());
-//
-//            String imageUrl;
-//            String takenMonth;
-//            long photoId;
-//
-//            if (photoOpt.isPresent()) {
-//                RelatedTourPhoto photo = photoOpt.get();
-//                if (usedPhotoIds.contains(photo.getId())) continue;
-//
-//                imageUrl = photo.getImageUrl();
-//                takenMonth = photo.getTakenMonth();
-//                photoId = photo.getId();
-//            } else {
-//                TourPhotoDTO dto;
-//                try {
-//                    dto = tourInfoService.getTourPhoto(spot.getHubTatsNm());
-//                } catch (Exception e) {
-//                    log.warn("외부 사진 조회 실패: {}", spot.getHubTatsNm());
-//                    continue;
-//                }
-//
-//                if (dto == null) continue;
-//
-//                imageUrl = dto.getImageUrl();
-//                takenMonth = dto.getTakenMonth();
-//
-//                // hash → 양수화 (음수 방지)
-//                photoId = Math.abs(Objects.hash(dto.getImageUrl(), spot.getHubTatsNm()));
-//            }
-//
-//            if (usedPhotoIds.contains(photoId)) continue;
-//            usedPhotoIds.add(photoId);
-//
-//            CrowdBasedPhoto entity = CrowdBasedPhoto.builder()
-//                    .photoId(photoId)
-//                    .imageUrl(imageUrl)
-//                    .takenMonth(takenMonth)
-//                    .signguCd(area.getSignguCd())
-//                    .signguNm(area.getSignguNm())
-//                    .hubTatsCd(spot.getHubTatsCd())
-//                    .hubTatsNm(spot.getHubTatsNm())
-//                    .hubCtgryLclsNm(spot.getHubCtgryLclsNm())
-//                    .build();
-//
-//            try {
-//                crowdBasedPhotoRepository.save(entity);
-//            } catch (Exception e) {
-//                log.warn("사진 저장 실패: photoId={} 관광지명={}", photoId, spot.getHubTatsNm());
-//            }
-//
-//            if (usedPhotoIds.size() >= MAX_SIZE) return;
-//        }
+        Set<String> usedContentIds = new HashSet<>();
+        List<GovernmentVisitInfo> lowVisitAreas = governmentVisitInfoRepository.findTop30ByOrderByTouNumAsc();
+        List<RegionBasedTourist> candidateSpots = new ArrayList<>();
+
+        for (GovernmentVisitInfo area : lowVisitAreas) {
+            String areaCd = area.getSigunguCd().substring(0, 2);
+            String sigunguCd = area.getSigunguCd().substring(2, 5);
+
+            List<RegionBasedTourist> allSpots = regionBasedTouristRepository
+                    .findByAreaCdAndSigunguCd(areaCd, sigunguCd);
+
+            if (allSpots.isEmpty()) {
+                allSpots = regionBasedTouristService.getRegionBasedTouristsEntity(areaCd, sigunguCd);
+            }
+
+            List<RegionBasedTourist> filtered = allSpots.stream()
+                    .filter(spot -> spot.getFirstImage() != null && !spot.getFirstImage().isBlank())
+                    .collect(Collectors.toList());
+
+            Collections.shuffle(filtered);
+
+            // 최대 5개만 추출
+            candidateSpots.addAll(filtered.stream().limit(5).toList());
+        }
+
+        // 전체 후보 섞고 MAX_SIZE 만큼 저장
+        Collections.shuffle(candidateSpots);
+
+        for (RegionBasedTourist spot : candidateSpots) {
+            String contentId = spot.getContentId();
+            if (usedContentIds.contains(contentId)) continue;
+
+            // GovernmentVisitInfo로부터 signguNm 가져오기
+            String regionCode = spot.getAreaCd() + spot.getSigunguCd();
+
+            GovernmentVisitInfo matchedArea = lowVisitAreas.stream()
+                    .filter(a -> a.getSigunguCd().equals(regionCode))
+                    .findFirst()
+                    .orElse(null);
+
+            if (matchedArea == null) {
+                log.warn("No match for regionCode={}, spot: areaCd={}, sigunguCd={}",
+                        regionCode, spot.getAreaCd(), spot.getSigunguCd());
+                continue;
+            }
+
+            CrowdBasedPhoto photo = CrowdBasedPhoto.builder()
+                    .contentId(contentId)
+                    .title(spot.getTitle())
+                    .addr1(spot.getAddr1())
+                    .addr2(spot.getAddr2())
+                    .areaCd(spot.getAreaCd())
+                    .sigunguCd(spot.getSigunguCd())
+                    .sigunguNm(matchedArea.getSigunguNm())
+                    .imageUrl(spot.getFirstImage())
+                    .cpyrhtDivCd(spot.getCpyrhtDivCd())
+                    .modifiedTime(spot.getModifiedTime())
+                    .build();
+
+            try {
+                crowdBasedPhotoRepository.save(photo);
+                usedContentIds.add(contentId);
+                if (usedContentIds.size() >= MAX_SIZE) break;
+            } catch (Exception e) {
+                log.warn("사진 저장 실패: contentId={}, title={}", contentId, spot.getTitle(), e);
+            }
+        }
     }
 
-    public List<CrowdBasedPhotoResponseDTO> getCrowdBasedPhotos(Set<Long> seenIds, int limit) {
-        // 1. 전체 ID 조회 및 랜덤 셔플
-        List<Long> allIds = crowdBasedPhotoRepository.findAllIds(); // 커스텀 쿼리 필요
-        Collections.shuffle(allIds);
+    public List<CrowdBasedPhoto> getCrowdBasedPhotos(Set<String> seenIds, int limit) {
+        // 전체 contentId 조회 및 랜덤 셔플
+        List<String> allIds = crowdBasedPhotoRepository.findAllContentIds();
+        if (allIds.isEmpty()) return Collections.emptyList();
 
-        // 2. seenIds 제외 후 limit만큼 추출
-        List<Long> targetIds = allIds.stream()
+        List<String> filtered = allIds.stream()
                 .filter(id -> seenIds == null || !seenIds.contains(id))
-                .limit(limit)
                 .collect(Collectors.toList());
 
-        if (targetIds.isEmpty()) return Collections.emptyList();
+        // seenIds로 인해 가져올 수 있는 ID가 부족하면 종료
+        if (filtered.size() < limit) return Collections.emptyList();
 
-        // 3. 해당 ID로 실제 엔티티 조회
-        List<CrowdBasedPhoto> entities = crowdBasedPhotoRepository.findByPhotoIdIn(targetIds);
+        // 셔플 후 limit만큼 추출
+        Collections.shuffle(filtered);
+        List<String> targetIds = filtered.subList(0, limit);
 
-        return entities.stream()
-                .map(p -> CrowdBasedPhotoResponseDTO.builder()
-                        .photoId(p.getPhotoId())
-                        .imageUrl(p.getImageUrl())
-                        .takenMonth(p.getTakenMonth())
-                        .signguCd(p.getSignguCd())
-                        .signguNm(p.getSignguNm())
-                        .hubTatsCd(p.getHubTatsCd())
-                        .hubTatsNm(p.getHubTatsNm())
-                        .hubCtgryLclsNm(p.getHubCtgryLclsNm())
-                        .build())
-                .collect(Collectors.toList());
+        return crowdBasedPhotoRepository.findByContentIdIn(targetIds);
     }
-
-    public record TouristAreaEntry(
-            GovernmentVisitInfo area,
-            CentralTouristInfo spot
-    ) {}
 }

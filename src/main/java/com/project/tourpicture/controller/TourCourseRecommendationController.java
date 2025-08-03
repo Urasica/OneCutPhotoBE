@@ -39,10 +39,10 @@ public class TourCourseRecommendationController {
     @GetMapping("/recommend-courses-distance")
     public ResponseEntity<?> getCoursesByDistance(
             @Parameter(description = "관광지명", example = "경복궁")@RequestParam String startSpot,
-            @Parameter(description = "지역코드", example = "11")@RequestParam String areaCode,
+            @Parameter(description = "지역코드", example = "11")@RequestParam String areaCd,
             @Parameter(description = "시군구코드", example = "11110")@RequestParam String sigunguCode) {
         try {
-            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistance(startSpot, areaCode, sigunguCode, 4));
+            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistance(startSpot, areaCd, sigunguCode, 4));
         } catch (Exception ex){
             return TourInfoController.getErrorResponse(ex);
         }
@@ -62,10 +62,10 @@ public class TourCourseRecommendationController {
     @GetMapping("/recommend-courses-popularity")
     public ResponseEntity<?> getCoursesByPopularity(
             @Parameter(description = "관광지명", example = "경복궁")@RequestParam String startSpot,
-            @Parameter(description = "지역코드", example = "11")@RequestParam String areaCode,
+            @Parameter(description = "지역코드", example = "11")@RequestParam String areaCd,
             @Parameter(description = "시군구코드", example = "11110")@RequestParam String sigunguCode) {
         try {
-            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByPopularity(startSpot, areaCode, sigunguCode, 4));
+            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByPopularity(startSpot, areaCd, sigunguCode, 4));
         } catch (Exception ex) {
             return TourInfoController.getErrorResponse(ex);
         }
@@ -85,10 +85,10 @@ public class TourCourseRecommendationController {
     @GetMapping("/recommend-courses-distance-And-popularity")
     public ResponseEntity<?> getCoursesByDistanceAndPopularity(
             @Parameter(description = "관광지명", example = "경복궁")@RequestParam String startSpot,
-            @Parameter(description = "지역코드", example = "11")@RequestParam String areaCode,
+            @Parameter(description = "지역코드", example = "11")@RequestParam String areaCd,
             @Parameter(description = "시군구코드", example = "11110")@RequestParam String sigunguCode) {
         try {
-            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistanceAndPopularity(startSpot, areaCode, sigunguCode, 4));
+            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistanceAndPopularity(startSpot, areaCd, sigunguCode, 4));
         } catch (Exception ex){
             return TourInfoController.getErrorResponse(ex);
         }
