@@ -1,10 +1,8 @@
 package com.project.tourpicture.controller;
 
 import com.project.tourpicture.dto.ErrorResponse;
-import com.project.tourpicture.dto.RelatedTourResponseDTO;
-import com.project.tourpicture.dto.TourPhotoDTO;
-import com.project.tourpicture.exception.NotFoundException;
-import com.project.tourpicture.service.TourInfoService;
+import com.project.tourpicture.dto.TourCommonInfoDTO;
+import com.project.tourpicture.service.TourCommonInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,63 +10,39 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import static com.project.tourpicture.util.AppUtils.getErrorResponse;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tour")
 public class TourInfoController {
 
-    private final TourInfoService tourInfoService;
+    private final TourCommonInfoService tourCommonInfoService;
 
-    @Operation(summary = "관광지 연관 리스트 조회",
-            description = "입력한 관광지 키워드 기준으로 관련 관광지 리스트를 반환합니다.")
+    @Operation(summary = "관광지 공통 정보 조회(관광타입 ID, 홈페이지, 주소, 이미지, 개요 등)",
+            description = "입력한 관광지를 시작으로 거리를 우선으로 고려한 코스를 반환합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정상 응답",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RelatedTourResponseDTO.class))),
-            @ApiResponse(responseCode = "502", description = "파싱 오류",
+                            schema = @Schema(implementation = TourCommonInfoDTO.class))),
+            @ApiResponse(responseCode = "502", description = "조회 실패",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/related-list")
-    public ResponseEntity<?> getRelatedTours(
-            @Parameter(description = "조회할 개수", example = "10") @RequestParam int numOfRows,
-            @Parameter(description = "기준 연월 ", example = "202506") @RequestParam String baseYm,
-            @Parameter(description = "지역 코드", example = "11") @RequestParam String areaCode,
-            @Parameter(description = "시군구 코드", example = "11110") @RequestParam String sigunguCode,
-            @Parameter(description = "관광지명", example = "경복궁") @RequestParam String keyword) {
+    @GetMapping("/tourCommonInfo")
+    public ResponseEntity<?> getTourCommonInfo(
+            @Parameter(description = "콘텐츠 ID", example = "126128") @RequestParam String contentId) {
         try {
-            return ResponseEntity.ok(tourInfoService.getRelatedTours(numOfRows, baseYm, areaCode, sigunguCode, keyword));
-        } catch (Exception ex) {
-            return getErrorResponse(ex);
+            return ResponseEntity.ok(tourCommonInfoService.getTourCommonInfo(contentId));
+        } catch (Exception e) {
+            return getErrorResponse(e);
         }
-    }
-
-    @Operation(summary = "관광지 대표 사진 조회",
-            description = "키워드로 관광지 대표 사진과 촬영 연월 정보를 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 응답",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = TourPhotoDTO.class))),
-            @ApiResponse(responseCode = "404", description = "이미지 없음",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))
-            )
-    })
-
-    public static ResponseEntity<ErrorResponse> getErrorResponse(Exception ex) {
-        int statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
-        String reason = ex.getMessage();
-
-        if (ex instanceof NotFoundException) {
-            statusCode = HttpStatus.NOT_FOUND.value();
-        }
-
-        ErrorResponse error = new ErrorResponse(statusCode, reason);
-        return ResponseEntity.status(statusCode).body(error);
     }
 }

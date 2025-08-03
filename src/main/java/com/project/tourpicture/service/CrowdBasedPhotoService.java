@@ -4,7 +4,6 @@ import com.project.tourpicture.dao.CentralTouristInfo;
 import com.project.tourpicture.dao.CrowdBasedPhoto;
 import com.project.tourpicture.dao.GovernmentVisitInfo;
 import com.project.tourpicture.dto.CrowdBasedPhotoResponseDTO;
-import com.project.tourpicture.dto.TourPhotoDTO;
 import com.project.tourpicture.repository.CentralTouristInfoRepository;
 import com.project.tourpicture.repository.CrowdBasedPhotoRepository;
 import com.project.tourpicture.repository.GovernmentVisitInfoRepository;
@@ -25,7 +24,7 @@ public class CrowdBasedPhotoService {
     @Autowired
     private CentralTouristInfoRepository centralTouristInfoRepository;
     @Autowired
-    private TourInfoService tourInfoService;
+    private RelatedTourService tourInfoService;
     @Autowired
     private CrowdBasedPhotoRepository crowdBasedPhotoRepository;
 
