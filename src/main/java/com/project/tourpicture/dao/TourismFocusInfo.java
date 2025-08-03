@@ -25,13 +25,13 @@ public class TourismFocusInfo {
     @Schema(description = "지역명", example = "서울특별시")
     private String areaNm;
 
-    @JsonProperty("signguCd")
+    @JsonProperty("sigunguCd")
     @Schema(description = "시군구 코드", example = "11110")
-    private String signguCd;
+    private String sigunguCd;
 
     @JsonProperty("signguNm")
     @Schema(description = "시군구 명", example = "종로구")
-    private String signguNm;
+    private String sigunguNm;
 
     @JsonProperty("tAtsNm")
     @Schema(description = "관광지 명", example = "경복궁")

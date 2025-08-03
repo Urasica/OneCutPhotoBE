@@ -90,7 +90,7 @@ public class LocalGovernmentFocusService {
 
     // 기초 지자체 집중률 반환
     public List<BasicLocalGovernmentFocusInfo> getBasicLocalGovernmentFocus(String areaCd) {
-        return BGLFIRepo.findBySignguCdStartingWith(areaCd);
+        return BGLFIRepo.findBySigunguCdStartingWith(areaCd);
     }
 
     // 기초 지자체 집중률 조회

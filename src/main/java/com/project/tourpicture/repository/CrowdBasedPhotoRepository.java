@@ -6,10 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface CrowdBasedPhotoRepository extends JpaRepository<CrowdBasedPhoto, Long> {
-    @Query("SELECT p.photoId FROM CrowdBasedPhoto p")
-    List<Long> findAllIds();
+public interface CrowdBasedPhotoRepository extends JpaRepository<CrowdBasedPhoto, String> {
+    @Query("SELECT c.contentId FROM CrowdBasedPhoto c")
+    List<String> findAllContentIds();
 
-    List<CrowdBasedPhoto> findByPhotoIdIn(List<Long> ids);
-
+    List<CrowdBasedPhoto> findByContentIdIn(List<String> contentIds);
 }

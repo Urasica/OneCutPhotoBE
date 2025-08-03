@@ -1,6 +1,6 @@
 package com.project.tourpicture.controller;
 
-import com.project.tourpicture.dto.CrowdBasedPhotoResponseDTO;
+import com.project.tourpicture.dao.CrowdBasedPhoto;
 import com.project.tourpicture.service.CrowdBasedPhotoService;
 import com.project.tourpicture.service.GovernmentVisitService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,11 +26,11 @@ public class CrowdBasedPhotoController {
     private CrowdBasedPhotoService crowdBasedPhotoService;
 
     @PostMapping("/recommend")
-    public ResponseEntity<List<CrowdBasedPhotoResponseDTO>> getPhotos(
-            @RequestBody(required = false) Set<Long> seenIds,
+    public ResponseEntity<List<CrowdBasedPhoto>> getPhotos(
+            @RequestBody(required = false) Set<String> seenIds,
             @RequestParam(defaultValue = "10") int limit) {
 
-        List<CrowdBasedPhotoResponseDTO> photos = photoService.getCrowdBasedPhotos(seenIds, limit);
+        List<CrowdBasedPhoto> photos = photoService.getCrowdBasedPhotos(seenIds, limit);
         return ResponseEntity.ok(photos);
     }
 
@@ -41,7 +41,6 @@ public class CrowdBasedPhotoController {
     @GetMapping("/update-visit")
     public String updateVisit() {
         governmentVisitService.VisitTouristUpdate();
-        governmentVisitService.fetchLowVisitCentralTourist();
 
         return "OK";
     }

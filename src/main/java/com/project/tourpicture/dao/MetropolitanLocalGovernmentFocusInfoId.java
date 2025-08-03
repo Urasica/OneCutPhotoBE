@@ -13,7 +13,7 @@ import java.util.Objects;
 public class MetropolitanLocalGovernmentFocusInfoId implements Serializable {
     private String baseYmd;
     private String touDivCd;
-    private String areaCode;
+    private String areaCd;
 
     @Override
     public boolean equals(Object o) {
@@ -21,11 +21,11 @@ public class MetropolitanLocalGovernmentFocusInfoId implements Serializable {
         if (!(o instanceof MetropolitanLocalGovernmentFocusInfoId that)) return false;
         return Objects.equals(baseYmd, that.baseYmd)
                 && Objects.equals(touDivCd, that.touDivCd)
-                && Objects.equals(areaCode, that.areaCode);
+                && Objects.equals(areaCd, that.areaCd);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(baseYmd, touDivCd, areaCode);
+        return Objects.hash(baseYmd, touDivCd, areaCd);
     }
 }

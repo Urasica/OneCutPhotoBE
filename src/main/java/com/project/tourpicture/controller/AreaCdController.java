@@ -57,13 +57,23 @@ public class AreaCdController {
             )
     })
     @GetMapping("/sigungus")
-    public ResponseEntity<List<AreaService.SignguCodeDto>> getSigungus(@Parameter(description = "지역 코드", example = "11") @RequestParam String areaCd) {
-        List<AreaService.SignguCodeDto> sigungus = areaService.getSignguCodesWithNameByAreaCode(areaCd);
+    public ResponseEntity<List<AreaService.SigunguCodeDto>> getSigungus(@Parameter(description = "지역 코드", example = "11") @RequestParam String areaCd) {
+        List<AreaService.SigunguCodeDto> sigungus = areaService.getSignguCodesWithNameByAreaCode(areaCd);
 
         if (sigungus == null) {
             return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(sigungus);
+    }
+
+    @Operation(
+            summary = "시도, 시군구 코드 업데이트(임시 배치)",
+            description = "사용 금지"
+    )
+    @GetMapping("/update-code")
+    public void updateCode() {
+        areaService.fetchAreaCd();
+        areaService.fetchSigunguCd();
     }
 }
