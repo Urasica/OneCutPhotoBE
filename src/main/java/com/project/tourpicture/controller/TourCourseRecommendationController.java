@@ -40,55 +40,9 @@ public class TourCourseRecommendationController {
     public ResponseEntity<?> getCoursesByDistance(
             @Parameter(description = "관광지명", example = "경복궁")@RequestParam String startSpot,
             @Parameter(description = "시도코드", example = "11")@RequestParam String areaCode,
-            @Parameter(description = "시군구코드", example = "11110")@RequestParam String sigunguCode) {
+            @Parameter(description = "시군구코드", example = "110")@RequestParam String sigunguCode) {
         try {
             return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistance(startSpot, areaCode, sigunguCode, 4));
-        } catch (Exception e){
-            return getErrorResponse(e);
-        }
-    }
-
-    @Operation(summary = "관광지별 코스 추천(방문률 우선)",
-            description = "입력한 관광지를 시작으로 방문률을 우선으로 고려한 코스를 반환합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 응답",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = TourCourseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "코스 추천 실패",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))
-            )
-    })
-    @GetMapping("/recommend-courses-popularity")
-    public ResponseEntity<?> getCoursesByPopularity(
-            @Parameter(description = "관광지명", example = "경복궁")@RequestParam String startSpot,
-            @Parameter(description = "시도코드", example = "11")@RequestParam String areaCode,
-            @Parameter(description = "시군구코드", example = "11110")@RequestParam String sigunguCode) {
-        try {
-            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByPopularity(startSpot, areaCode, sigunguCode, 4));
-        } catch (Exception e) {
-            return getErrorResponse(e);
-        }
-    }
-
-    @Operation(summary = "관광지별 코스 추천(거리, 방문률 모두 고려)",
-            description = "입력한 관광지를 시작으로 거리, 방문률을 모두 고려한 코스를 반환합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 응답",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = TourCourseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "코스 추천 실패",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))
-            )
-    })
-    @GetMapping("/recommend-courses-distance-And-popularity")
-    public ResponseEntity<?> getCoursesByDistanceAndPopularity(
-            @Parameter(description = "관광지명", example = "경복궁")@RequestParam String startSpot,
-            @Parameter(description = "시도코드", example = "11")@RequestParam String areaCode,
-            @Parameter(description = "시군구코드", example = "11110")@RequestParam String sigunguCode) {
-        try {
-            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistanceAndPopularity(startSpot, areaCode, sigunguCode, 4));
         } catch (Exception e){
             return getErrorResponse(e);
         }
