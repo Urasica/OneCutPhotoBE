@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CrowdBasedPhotoService {
-    private static final int MAX_SIZE = 150;
+    private static final int MAX_SIZE = 250;
 
     private final GovernmentVisitInfoRepository governmentVisitInfoRepository;
     private final RegionBasedTouristRepository regionBasedTouristRepository;
@@ -30,7 +30,7 @@ public class CrowdBasedPhotoService {
     @Transactional
     public void initializePhotoDB() {
         Set<String> usedContentIds = new HashSet<>();
-        List<GovernmentVisitInfo> lowVisitAreas = governmentVisitInfoRepository.findTop30ByOrderByTouNumAsc();
+        List<GovernmentVisitInfo> lowVisitAreas = governmentVisitInfoRepository.findTop50ByOrderByTouNumAsc();
         List<RegionBasedTourist> candidateSpots = new ArrayList<>();
 
         for (GovernmentVisitInfo area : lowVisitAreas) {
@@ -98,22 +98,11 @@ public class CrowdBasedPhotoService {
         }
     }
 
-    public List<CrowdBasedPhoto> getCrowdBasedPhotos(Set<String> seenIds, int limit) {
-        // 전체 contentId 조회 및 랜덤 셔플
-        List<String> allIds = crowdBasedPhotoRepository.findAllContentIds();
-        if (allIds.isEmpty()) return Collections.emptyList();
+    public List<CrowdBasedPhoto> getCrowdBasedPhotos() {
+        List<CrowdBasedPhoto> allPhotos = crowdBasedPhotoRepository.findAll();
+        if (allPhotos.isEmpty()) return Collections.emptyList();
 
-        List<String> filtered = allIds.stream()
-                .filter(id -> seenIds == null || !seenIds.contains(id))
-                .collect(Collectors.toList());
-
-        // seenIds로 인해 가져올 수 있는 ID가 부족하면 종료
-        if (filtered.size() < limit) return Collections.emptyList();
-
-        // 셔플 후 limit만큼 추출
-        Collections.shuffle(filtered);
-        List<String> targetIds = filtered.subList(0, limit);
-
-        return crowdBasedPhotoRepository.findByContentIdIn(targetIds);
+        Collections.shuffle(allPhotos);
+        return allPhotos;
     }
 }

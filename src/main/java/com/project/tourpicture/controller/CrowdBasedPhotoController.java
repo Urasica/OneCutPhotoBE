@@ -1,58 +1,42 @@
 package com.project.tourpicture.controller;
 
 import com.project.tourpicture.dao.CrowdBasedPhoto;
+import com.project.tourpicture.dto.ErrorResponse;
 import com.project.tourpicture.service.CrowdBasedPhotoService;
-import com.project.tourpicture.service.GovernmentVisitService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/crowd-photo")
 public class CrowdBasedPhotoController {
 
-    @Autowired
     private final CrowdBasedPhotoService photoService;
 
-    @Autowired
-    private final GovernmentVisitService governmentVisitService;
-    @Autowired
-    private CrowdBasedPhotoService crowdBasedPhotoService;
 
-    @PostMapping("/recommend")
-    public ResponseEntity<List<CrowdBasedPhoto>> getPhotos(
-            @RequestBody(required = false) Set<String> seenIds,
-            @RequestParam(defaultValue = "10") int limit) {
+    @Operation(
+            summary = "홈화면 사진용 관광지 목록 조회",
+            description = "요청 시마다 랜덤하게 섞인 관광지 목록을 반환합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정상 응답"),
+            @ApiResponse(responseCode = "404", description = "데이터 없음",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @GetMapping("/recommend")
+    public ResponseEntity<List<CrowdBasedPhoto>> getPhotos() {
 
-        List<CrowdBasedPhoto> photos = photoService.getCrowdBasedPhotos(seenIds, limit);
+        List<CrowdBasedPhoto> photos = photoService.getCrowdBasedPhotos();
         return ResponseEntity.ok(photos);
-    }
-
-    @Operation(
-            summary = "방문객 및 관광지 목록 업데이트 (임시 배치)",
-            description = "절대 절대 사용 금지"
-    )
-    @GetMapping("/update-visit")
-    public String updateVisit() {
-        governmentVisitService.VisitTouristUpdate();
-
-        return "OK";
-    }
-
-    @Operation(
-            summary = "홈 사진 목록 업데이트 (임시 배치)",
-            description = "사용 금지"
-    )
-    @GetMapping("/cache-visit")
-    public String cacheVisit() {
-        crowdBasedPhotoService.initializePhotoDB();
-
-        return "OK";
     }
 }

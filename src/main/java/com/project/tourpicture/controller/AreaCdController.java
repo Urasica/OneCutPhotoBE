@@ -66,14 +66,4 @@ public class AreaCdController {
 
         return ResponseEntity.ok(sigungus);
     }
-
-    @Operation(
-            summary = "시도, 시군구 코드 업데이트(임시 배치)",
-            description = "사용 금지"
-    )
-    @GetMapping("/update-code")
-    public void updateCode() {
-        areaService.fetchAreaCd();
-        areaService.fetchSigunguCd();
-    }
 }

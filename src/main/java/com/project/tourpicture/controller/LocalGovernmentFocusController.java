@@ -1,8 +1,8 @@
 package com.project.tourpicture.controller;
 
-import com.project.tourpicture.dao.BasicLocalGovernmentFocusInfo;
-import com.project.tourpicture.dao.MetropolitanLocalGovernmentFocusInfo;
+import com.project.tourpicture.dto.BasicLocalGovernmentFocusInfoDTO;
 import com.project.tourpicture.dto.ErrorResponse;
+import com.project.tourpicture.dto.MetropolitanLocalGovernmentFocusInfoDTO;
 import com.project.tourpicture.service.LocalGovernmentFocusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,10 +40,10 @@ public class LocalGovernmentFocusController {
             )
     })
     @GetMapping("/metropolitan-localgovernment-focus")
-    public ResponseEntity<List<MetropolitanLocalGovernmentFocusInfo>> getMetropolitanLocalGovernmentFocus() {
+    public ResponseEntity<List<MetropolitanLocalGovernmentFocusInfoDTO>> getMetropolitanLocalGovernmentFocus() {
         log.info("GET /api/metropolitan-localgovernment-focus 요청 수신");
 
-        List<MetropolitanLocalGovernmentFocusInfo> result = lgfService.getMetropolitanLocalGovernmentFocus();
+        List<MetropolitanLocalGovernmentFocusInfoDTO> result = lgfService.getMetropolitanLocalGovernmentFocus();
 
         if (result == null || result.isEmpty()) {
             log.warn("광역지자체 집중률 정보 없음 -> 404 반환");
@@ -66,10 +66,10 @@ public class LocalGovernmentFocusController {
             )
     })
     @GetMapping("/basic-localgovernment-focus")
-    public ResponseEntity<List<BasicLocalGovernmentFocusInfo>> getBasicLocalGovernmentFocus(@Parameter(description = "시도 코드", example = "11") @RequestParam String areaCd) {
+    public ResponseEntity<List<BasicLocalGovernmentFocusInfoDTO>> getBasicLocalGovernmentFocus(@Parameter(description = "시도 코드", example = "11") @RequestParam String areaCd) {
         log.info("GET /api/basic-localgovernment-focus 요청 수신");
 
-        List<BasicLocalGovernmentFocusInfo> result = lgfService.getBasicLocalGovernmentFocus(areaCd);
+        List<BasicLocalGovernmentFocusInfoDTO> result = lgfService.getBasicLocalGovernmentFocus(areaCd);
 
         if (result == null || result.isEmpty()) {
             log.warn("기초지자체 집중률 정보 없음 -> 404 반환");
@@ -78,25 +78,5 @@ public class LocalGovernmentFocusController {
 
         log.info("기초지자체 집중률 정보 {}건 반환", result.size());
         return ResponseEntity.ok(result);
-    }
-
-    @Operation(
-            summary = "광역지자체 집중률 업데이트 (임시 배치)",
-            description = "사용 금지"
-    )
-    @GetMapping("fetch-metropolitan")
-    public String fetchMetropolitanLocalGovernmentFocus() {
-        lgfService.fetchMetropolitanLocalGovernmentFocus();
-        return "OK";
-    }
-
-    @Operation(
-            summary = "기초지자체 집중률 업데이트 (임시 배치)",
-            description = "사용 금지"
-    )
-    @GetMapping("fetch-basic")
-    public String fetchBasicLocalGovernmentFocus() {
-        lgfService.fetchBasicLocalGovernmentFocus();
-        return "OK";
     }
 }

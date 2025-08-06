@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.tourpicture.dao.BasicLocalGovernmentFocusInfo;
 import com.project.tourpicture.dao.MetropolitanLocalGovernmentFocusInfo;
+import com.project.tourpicture.dto.BasicLocalGovernmentFocusInfoDTO;
+import com.project.tourpicture.dto.MetropolitanLocalGovernmentFocusInfoDTO;
 import com.project.tourpicture.repository.BasicLocalGovernmentFocusInfoRepository;
 import com.project.tourpicture.repository.MetropolitanLocalGovernmentFocusInfoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -41,8 +44,19 @@ public class LocalGovernmentFocusService {
     }
 
     // 광역지자체 집중률 반환
-    public List<MetropolitanLocalGovernmentFocusInfo> getMetropolitanLocalGovernmentFocus() {
-        return MGLFIRepo.findAll();
+    public List<MetropolitanLocalGovernmentFocusInfoDTO> getMetropolitanLocalGovernmentFocus() {
+        return MGLFIRepo.findAll().stream()
+                .map(info -> new MetropolitanLocalGovernmentFocusInfoDTO(
+                        info.getBaseYmd(),
+                        info.getAreaCd(),
+                        info.getTouDivCd(),
+                        info.getAreaNm(),
+                        info.getTouDivNm(),
+                        info.getDaywkDivCd(),
+                        info.getDaywkDivNm(),
+                        info.getTouNum()
+                ))
+                .collect(Collectors.toList());
     }
 
     // 광역지자체 집중률 조회
@@ -89,9 +103,21 @@ public class LocalGovernmentFocusService {
     }
 
     // 기초 지자체 집중률 반환
-    public List<BasicLocalGovernmentFocusInfo> getBasicLocalGovernmentFocus(String areaCd) {
-        return BGLFIRepo.findBySigunguCdStartingWith(areaCd);
+    public List<BasicLocalGovernmentFocusInfoDTO> getBasicLocalGovernmentFocus(String areaCd) {
+        return BGLFIRepo.findBySigunguCdStartingWith(areaCd).stream()
+                .map(info -> new BasicLocalGovernmentFocusInfoDTO(
+                        info.getBaseYmd(),
+                        info.getSigunguCd(),
+                        info.getTouDivCd(),
+                        info.getSigunguNm(),
+                        info.getTouDivNm(),
+                        info.getDaywkDivCd(),
+                        info.getDaywkDivNm(),
+                        info.getTouNum()
+                ))
+                .collect(Collectors.toList());
     }
+
 
     // 기초 지자체 집중률 조회
     public void fetchBasicLocalGovernmentFocus() {
