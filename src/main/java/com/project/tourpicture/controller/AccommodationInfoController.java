@@ -40,11 +40,11 @@ public class AccommodationInfoController {
     })
     @GetMapping("/accommodation")
     public ResponseEntity<?> getAccommodations(
-            @Parameter(description = "시도코드", example = "51") @RequestParam String areaCode,
-            @Parameter(description = "시군구코드", example = "820") @RequestParam String sigunguCode,
+            @Parameter(description = "시도코드", example = "51") @RequestParam String areaCd,
+            @Parameter(description = "시군구코드", example = "820") @RequestParam String sigunguCd,
             @Parameter(description = "조회할 개수", example = "10") @RequestParam int numOfRows) {
         try {
-            return ResponseEntity.ok(accommodationInfoService.getAccommodations(areaCode, sigunguCode, numOfRows));
+            return ResponseEntity.ok(accommodationInfoService.getAccommodations(areaCd, sigunguCd, numOfRows));
         } catch (Exception e) {
             return getErrorResponse(e);
         }

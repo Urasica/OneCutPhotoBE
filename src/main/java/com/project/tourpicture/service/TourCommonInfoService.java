@@ -19,7 +19,9 @@ import java.util.regex.Pattern;
 
 import static com.project.tourpicture.util.AppUtils.getItemsNode;
 
-// 관광지 공통 정보 조회
+/**
+ * 모든 관광지 카테고리의 공통 정보 조회
+ */
 @Service
 @RequiredArgsConstructor
 public class TourCommonInfoService {
@@ -54,11 +56,12 @@ public class TourCommonInfoService {
 
     private TourCommonInfoDTO parseTourCommonInfoResponse(String json) throws JsonProcessingException {
         JsonNode items = getItemsNode(json);
-        List<TourCommonInfoDTO> results = new ArrayList<>();
+        List<TourCommonInfoDTO> result = new ArrayList<>();
 
         for (JsonNode item : items) {
             TourCommonInfoDTO dto = new TourCommonInfoDTO();
 
+            dto.setContentId(item.get("contentid").asText());
             dto.setContentTypeId(item.get("contenttypeid").asText());
             dto.setName(item.path("title").textValue());
 
@@ -78,8 +81,8 @@ public class TourCommonInfoService {
             dto.setMapY(item.path("mapy").asText());
             dto.setOverview(item.path("overview").asText());
 
-            results.add(dto);
+            result.add(dto);
         }
-        return results.get(0);
+        return result.get(0);
     }
 }

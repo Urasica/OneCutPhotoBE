@@ -1,7 +1,7 @@
 package com.project.tourpicture.controller;
 
 import com.project.tourpicture.dto.ErrorResponse;
-import com.project.tourpicture.dto.TourCourseDTO;
+import com.project.tourpicture.dto.TourCourseItemDTO;
 import com.project.tourpicture.service.TourCourseRecommendationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,19 +30,19 @@ public class TourCourseRecommendationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정상 응답",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = TourCourseDTO.class))),
+                            schema = @Schema(implementation = TourCourseItemDTO.class))),
             @ApiResponse(responseCode = "404", description = "코스 추천 실패",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/recommend-courses-distance")
-    public ResponseEntity<?> getCoursesByDistance(
+    @GetMapping("/recommend-course-distance")
+    public ResponseEntity<?> getCourseByDistance(
             @Parameter(description = "관광지명", example = "경복궁")@RequestParam String startSpot,
-            @Parameter(description = "시도코드", example = "11")@RequestParam String areaCode,
-            @Parameter(description = "시군구코드", example = "110")@RequestParam String sigunguCode) {
+            @Parameter(description = "시도코드", example = "11")@RequestParam String areaCd,
+            @Parameter(description = "시군구코드", example = "110")@RequestParam String sigunguCd) {
         try {
-            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistance(startSpot, areaCode, sigunguCode, 4));
+            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistance(startSpot, areaCd, sigunguCd, 4));
         } catch (Exception e){
             return getErrorResponse(e);
         }
