@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 @Schema(description = "추천 코스 관광지 정보")
-public class TourCourseDTO {
+public class TourCourseItemDTO {
 
     @Schema(description = "관광지명", example = "광장시장")
     private String tourName;
