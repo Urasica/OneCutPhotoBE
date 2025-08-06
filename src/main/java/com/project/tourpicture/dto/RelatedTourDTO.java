@@ -15,16 +15,16 @@ public class RelatedTourDTO {
     private String imageUrl;
 
     @Schema(description = "시도코드", example = "11")
-    private String relatedTourAreaCode;
+    private String areaCd;
 
     @Schema(description = "지역명", example = "서울특별시")
-    private String relatedTourAreaName;
+    private String areaName;
 
     @Schema(description = "시군구코드", example = "110")
-    private String relatedTourSigunguCode;
+    private String sigunguCd;
 
     @Schema(description = "시군구명", example = "종로구")
-    private String relatedTourSigunguName;
+    private String sigunguName;
 
     @Schema(description = "카테고리(대)", example = "관광지")
     private String relatedTourCategoryLarge;

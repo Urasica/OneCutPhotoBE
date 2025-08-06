@@ -25,8 +25,8 @@ public class TourInfoController {
 
     private final TourCommonInfoService tourCommonInfoService;
 
-    @Operation(summary = "관광지 공통 정보 조회(관광타입 ID, 홈페이지, 주소, 이미지, 개요 등)",
-            description = "입력한 관광지를 시작으로 거리를 우선으로 고려한 코스를 반환합니다.")
+    @Operation(summary = "모든 관광지 카테고리 공통 정보 조회(관광타입 ID, 홈페이지, 주소, 이미지, 개요 등)",
+            description = "입력한 콘텐츠 ID에 해당하는 공통 정보를 반환합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정상 응답",
                     content = @Content(mediaType = "application/json",
@@ -36,7 +36,7 @@ public class TourInfoController {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/tourCommonInfo")
+    @GetMapping("/commonInfo")
     public ResponseEntity<?> getTourCommonInfo(
             @Parameter(description = "콘텐츠 ID", example = "126128") @RequestParam String contentId) {
         try {

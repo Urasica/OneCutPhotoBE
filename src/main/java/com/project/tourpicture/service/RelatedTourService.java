@@ -64,10 +64,10 @@ public class RelatedTourService {
 
             dto.setRelatedTourName(rlteTatsNm);
             dto.setImageUrl(getRelatedTourPhoto(rlteSignguCd, rlteTatsNm));
-            dto.setRelatedTourAreaName(item.path("rlteRegnNm").textValue());
-            dto.setRelatedTourAreaCode(item.path("rlteRegnCd").textValue());
-            dto.setRelatedTourSigunguName(item.path("rlteSignguNm").textValue());
-            dto.setRelatedTourSigunguCode(rlteSignguCd.substring(2));
+            dto.setAreaName(item.path("rlteRegnNm").textValue());
+            dto.setAreaCd(item.path("rlteRegnCd").textValue());
+            dto.setSigunguName(item.path("rlteSignguNm").textValue());
+            dto.setSigunguCd(rlteSignguCd.substring(2));
             dto.setRelatedTourCategoryLarge(item.path("rlteCtgryLclsNm").textValue());
             dto.setRelatedTourCategorySmall(item.path("rlteCtgrySclsNm").textValue());
 

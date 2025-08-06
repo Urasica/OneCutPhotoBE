@@ -5,7 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
+@Schema(description = "모든 관광지 카테고리 공통 정보")
 public class TourCommonInfoDTO {
+
+    @Schema(description = "콘텐츠 ID", example = "126128")
+    private String contentId;
 
     @Schema(description = "관광타입 ID", example = "12")
     private String contentTypeId;
