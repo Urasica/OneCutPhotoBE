@@ -137,6 +137,6 @@ public class AreaService {
                 .toList();
     }
 
-    public record AreaCodeDto(String areaCode, String areaName) {}
-    public record SigunguCodeDto(String signguCode, String signguName) {}
+    public record AreaCodeDto(String areaCd, String areaNm) {}
+    public record SigunguCodeDto(String signguCd, String signguNm) {}
 }

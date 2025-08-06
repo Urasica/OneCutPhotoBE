@@ -39,7 +39,7 @@ public class GovernmentVisitService {
             GovernmentVisitInfo info = new GovernmentVisitInfo();
             info.setBaseYmd(sample.getBaseYmd());
             info.setSigunguCd(sample.getSigunguCd());
-            info.setSigunguCd(sample.getSigunguNm());
+            info.setSigunguNm(sample.getSigunguNm());
             info.setDaywkDivCd(sample.getDaywkDivCd());
             info.setDaywkDivNm(sample.getDaywkDivNm());
             info.setTouNum(totalTourists);
