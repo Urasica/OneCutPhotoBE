@@ -2,7 +2,9 @@ package com.project.tourpicture.controller;
 
 import com.project.tourpicture.dto.ErrorResponse;
 import com.project.tourpicture.dto.TourCommonInfoDTO;
+import com.project.tourpicture.dto.intro.*;
 import com.project.tourpicture.service.TourCommonInfoService;
+import com.project.tourpicture.service.TourIntroService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,6 +26,7 @@ import static com.project.tourpicture.util.AppUtils.getErrorResponse;
 public class TourInfoController {
 
     private final TourCommonInfoService tourCommonInfoService;
+    private final TourIntroService tourIntroService;
 
     @Operation(summary = "모든 관광지 카테고리 공통 정보 조회(관광타입 ID, 홈페이지, 주소, 이미지, 개요 등)",
             description = "입력한 콘텐츠 ID에 해당하는 공통 정보를 반환합니다.")
@@ -41,6 +44,38 @@ public class TourInfoController {
             @Parameter(description = "콘텐츠 ID", example = "126128") @RequestParam String contentId) {
         try {
             return ResponseEntity.ok(tourCommonInfoService.getTourCommonInfo(contentId));
+        } catch (Exception e) {
+            return getErrorResponse(e);
+        }
+    }
+
+    @Operation(summary = "관광지 카테고리별 소개 정보",
+            description = "입력한 콘텐츠 ID, 관광타입 ID에 해당하는 소개 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정상 응답",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(oneOf = {
+                                    TourIntroDTO.class,
+                                    CultureIntroDTO.class,
+                                    EventIntroDTO.class,
+                                    TourCourseIntroDTO.class,
+                                    LeportsIntroDTO.class,
+                                    ShoppingIntroDTO.class
+                            })
+                    )
+            ),
+            @ApiResponse(responseCode = "502", description = "조회 실패",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @GetMapping("/intro")
+    public ResponseEntity<?> getTourIntro(
+            @Parameter(description = "콘텐츠 ID", example = "126128") @RequestParam String contentId,
+            @Parameter(description = "관광타입 ID", example = "12") @RequestParam String contentTypeId
+    ) {
+        try {
+            return ResponseEntity.ok(tourIntroService.getIntroByCategory(contentId, contentTypeId));
         } catch (Exception e) {
             return getErrorResponse(e);
         }
