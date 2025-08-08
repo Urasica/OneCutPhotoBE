@@ -1,8 +1,8 @@
 package com.project.tourpicture.controller;
 
 import com.project.tourpicture.dto.ErrorResponse;
-import com.project.tourpicture.dto.RegionBasedTouristDTO;
-import com.project.tourpicture.service.RegionBasedTouristService;
+import com.project.tourpicture.dto.KeywordBasedTouristDTO;
+import com.project.tourpicture.service.KeywordBasedTouristService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,15 +22,15 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/region-base")
+@RequestMapping("/api/keyword-base")
 @RequiredArgsConstructor
 @Slf4j
-public class RegionBasedTouristController {
-    private final RegionBasedTouristService regionBasedTouristService;
+public class KeywordBasedTouristController {
+    private final KeywordBasedTouristService keywordBasedTouristService;
 
     @Operation(
-            summary = "지역 기반 관광지 조회",
-            description = "시군구 단위로 관광지를 조회합니다."
+            summary = "키워드 기반 관광지 조회",
+            description = "키워드로 관광지를 조회합니다."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정상 응답"),
@@ -40,21 +40,19 @@ public class RegionBasedTouristController {
             )
     })
     @GetMapping("/tourist-attractions")
-    public ResponseEntity<List<RegionBasedTouristDTO>> getRegionBasedTourist(@Parameter(description = "지역 코드", example = "11") @RequestParam String areaCd,
-                                                                             @Parameter(description = "시군구 코드", example = "110") @RequestParam String sigunguCd) {
-        log.info("GET /api/region-base/tourist-attractions 요청: areaCd={}, sigunguCd={}", areaCd, sigunguCd);
+    public ResponseEntity<List<KeywordBasedTouristDTO>> getKeywordBasedTourist(@Parameter(description = "키워드", example = "제주 시장") @RequestParam String keyword) {
+        log.info("GET /api/keyword-base/tourist-attractions 요청: keyword={}", keyword);
 
-        List<RegionBasedTouristDTO> response;
+        List<KeywordBasedTouristDTO> response;
 
-        response = regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd);
+        response = keywordBasedTouristService.getKeywordBasedTourists(keyword);
 
         if (response == null || response.isEmpty()) {
-            log.warn("지역 기반 관광지 데이터 없음 → 404 반환");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.emptyList());
+            log.warn("키워드 기반 관광지 데이터 없음");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         }
 
-        log.info("지역 기반 관광지 {}건 반환", response.size());
+        log.info("키워드 기반 관광지 {}건 반환", response.size());
         return ResponseEntity.ok(response);
     }
 }
