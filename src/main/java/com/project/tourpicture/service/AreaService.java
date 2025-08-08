@@ -138,5 +138,5 @@ public class AreaService {
     }
 
     public record AreaCodeDto(String areaCd, String areaNm) {}
-    public record SigunguCodeDto(String signguCd, String signguNm) {}
+    public record SigunguCodeDto(String sigunguCd, String sigunguNm) {}
 }

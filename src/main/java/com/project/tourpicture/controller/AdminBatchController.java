@@ -1,9 +1,6 @@
 package com.project.tourpicture.controller;
 
-import com.project.tourpicture.service.AreaService;
-import com.project.tourpicture.service.CrowdBasedPhotoService;
-import com.project.tourpicture.service.GovernmentVisitService;
-import com.project.tourpicture.service.LocalGovernmentFocusService;
+import com.project.tourpicture.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +19,8 @@ public class AdminBatchController {
     private final CrowdBasedPhotoService crowdBasedPhotoService;
 
     private final LocalGovernmentFocusService localGovernmentFocusService;
+
+    private final LclsSystemCdService lclsSystemCdService;
 
     @Operation(
             summary = "시도, 시군구 코드 업데이트"
@@ -67,6 +66,15 @@ public class AdminBatchController {
     @PostMapping("/update-basic")
     public String fetchBasicLocalGovernmentFocus() {
         localGovernmentFocusService.fetchBasicLocalGovernmentFocus();
+        return "OK";
+    }
+
+    @Operation(
+            summary = "분류코드 목록 업데이트"
+    )
+    @PostMapping("/update-lclys")
+    public String updateLclsSystemCd() {
+        lclsSystemCdService.fetchLclsSystemCd();
         return "OK";
     }
 }
