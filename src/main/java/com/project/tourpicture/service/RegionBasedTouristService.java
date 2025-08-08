@@ -38,14 +38,14 @@ public class RegionBasedTouristService {
 
         // 데이터 없으면 요청
         if (cachedData.isEmpty()) {
-            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd);
+            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
         }
 
         // 1주일 이상된 경우 갱신
         LocalDateTime lastUpdated = cachedData.get(0).getUpdatedAt();
         if (lastUpdated.isBefore(LocalDateTime.now().minusDays(7))) {
             regionBaseRepo.deleteByAreaCdAndSigunguCd(areaCd, sigunguCd);
-            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd);
+            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
         }
 
         return cachedData.stream()
@@ -60,7 +60,7 @@ public class RegionBasedTouristService {
 
         // 데이터 없으면 요청
         if (cachedData.isEmpty()) {
-            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd);
+            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
             if (cachedData == null || cachedData.isEmpty()) {
                 log.warn("관광지 데이터를 가져올 수 없습니다: areaCd={}, sigunguCd={}", areaCd, sigunguCd);
                 return Collections.emptyList();
@@ -71,7 +71,7 @@ public class RegionBasedTouristService {
         LocalDateTime lastUpdated = cachedData.get(0).getUpdatedAt();
         if (lastUpdated == null || lastUpdated.isBefore(LocalDateTime.now().minusDays(7))) {
             regionBaseRepo.deleteByAreaCdAndSigunguCd(areaCd, sigunguCd);
-            List<RegionBasedTourist> refreshedData = fetchAndSaveTouristData(areaCd, sigunguCd);
+            List<RegionBasedTourist> refreshedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
             if (refreshedData != null && !refreshedData.isEmpty()) {
                 return refreshedData;
             } else {
@@ -83,7 +83,7 @@ public class RegionBasedTouristService {
     }
 
     // 지역 기반 관광지 조회 및 저장 메서드
-    private List<RegionBasedTourist> fetchAndSaveTouristData(String areaCd, String sigunguCd) {
+    private List<RegionBasedTourist> fetchAndSaveTouristData(String areaCd, String sigunguCd, int contentTypeId) {
         try {
             String url = "http://apis.data.go.kr/B551011/KorService2/areaBasedList2"
                     + "?serviceKey=" + apiKey
@@ -91,7 +91,7 @@ public class RegionBasedTouristService {
                     + "&numOfRows=300"
                     + "&MobileOS=" + MobileOS
                     + "&MobileApp=" + MobileApp
-                    + "&contentTypeId=12"
+                    + "&contentTypeId=" + contentTypeId
                     + "&lDongRegnCd=" + areaCd
                     + "&lDongSignguCd=" + sigunguCd
                     + "&arrange=C"
