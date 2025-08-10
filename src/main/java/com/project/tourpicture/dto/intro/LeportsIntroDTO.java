@@ -17,6 +17,9 @@ public class LeportsIntroDTO {
     @Schema(description = "문의및안내")
     private String infoCenter;
 
+    @Schema(description = "개장기간")
+    private String openPeriod;
+
     @Schema(description = "주차시설")
     private String parking;
 
@@ -31,4 +34,7 @@ public class LeportsIntroDTO {
 
     @Schema(description = "입장료")
     private String useFee;
+
+    @Schema(description = "이용시간")
+    private String useTime;
 }
