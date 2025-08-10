@@ -14,17 +14,26 @@ public class EventIntroDTO {
     @Schema(description = "예매처")
     private String bookingPlace;
 
+    @Schema(description = "행사종료일")
+    private String eventEndDate;
+
     @Schema(description = "행사홈페이지")
     private String eventHomepage;
 
     @Schema(description = "행사장소")
     private String eventPlace;
 
+    @Schema(description = "행사시작일")
+    private String eventStartDate;
+
     @Schema(description = "공연시간")
     private String playTime;
 
     @Schema(description = "관람소요시간")
     private String spendTime;
+
+    @Schema(description = "주최자정보")
+    private String sponsor;
 
     @Schema(description = "주최자연락처")
     private String sponsorTel;

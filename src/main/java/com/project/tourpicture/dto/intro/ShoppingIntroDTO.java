@@ -14,6 +14,9 @@ public class ShoppingIntroDTO {
     @Schema(description = "문의및안내")
     private String infoCenter;
 
+    @Schema(description = "개장일")
+    private String openDate;
+
     @Schema(description = "영업시간")
     private String openTime;
 

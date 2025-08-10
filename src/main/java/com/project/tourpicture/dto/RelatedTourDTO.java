@@ -8,27 +8,18 @@ import lombok.Setter;
 @Schema(description = "연관관광지 정보")
 public class RelatedTourDTO {
 
-    @Schema(description = "관광지명", example = "광장시장")
-    private String relatedTourName;
+    @Schema(description = "콘텐츠 ID")
+    private String contentId;
 
-    @Schema(description = "관광지 이미지", example = "http://tong.visitkorea.or.kr/cms/resource/81/2668981_image2_1.jpg")
+    @Schema(description = "관광타입 ID")
+    private String contentTypeId;
+
+    @Schema(description = "관광지명")
+    private String title;
+
+    @Schema(description = "이미지")
     private String imageUrl;
 
-    @Schema(description = "시도코드", example = "11")
-    private String areaCd;
-
-    @Schema(description = "지역명", example = "서울특별시")
-    private String areaName;
-
-    @Schema(description = "시군구코드", example = "110")
-    private String sigunguCd;
-
-    @Schema(description = "시군구명", example = "종로구")
-    private String sigunguName;
-
-    @Schema(description = "카테고리(대)", example = "관광지")
-    private String relatedTourCategoryLarge;
-
-    @Schema(description = "카테고리(소)", example = "시장")
-    private String relatedTourCategorySmall;
+    @Schema(description = "주소")
+    private String address;
 }

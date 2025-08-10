@@ -9,13 +9,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.project.tourpicture.util.AppUtils.getDistance;
+import static com.project.tourpicture.util.AppUtils.getLocation;
+
 @Service
 @RequiredArgsConstructor
 public class TourCourseRecommendationService {
 
     private final RegionBasedTouristService regionBasedTouristService;
     private final RegionBasedTouristRepository regionBasedTouristRepository;
-    private final TourismFocusInfoService tourismFocusInfoService;
 
     // 추천 코스 조회(거리 기준)
     public List<TourCourseItemDTO> getCourseByDistance(String startSpot, String areaCode, String sigunguCode, int numOfCourse) {
@@ -75,29 +77,7 @@ public class TourCourseRecommendationService {
                 .orElseThrow(() -> new NotFoundException("해당 관광지의 위치 정보를 찾을 수 없어 코스 추천 불가"));
     }
 
-    // 경도, 위도 조회
-    private double[] getLocation(RegionBasedTourist info) {
-        return new double[]{
-                Double.parseDouble(info.getMapX()), //경도
-                Double.parseDouble(info.getMapY())  //위도
-        };
-    }
-
-    // 관광지간 거리 계산
-    private double getDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371;
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    }
-
-    public TourCourseItemDTO createTourCourseDTO(String tourName, String mapX, String mapY) {
+    private TourCourseItemDTO createTourCourseDTO(String tourName, String mapX, String mapY) {
         TourCourseItemDTO tourCourseDTO = new TourCourseItemDTO();
         tourCourseDTO.setTourName(tourName);
         tourCourseDTO.setMapX(mapX);

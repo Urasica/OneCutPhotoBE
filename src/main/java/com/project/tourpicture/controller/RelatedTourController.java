@@ -35,13 +35,11 @@ public class RelatedTourController {
     })
     @GetMapping("/related-list")
     public ResponseEntity<?> getRelatedTouristSpots(
-            @Parameter(description = "조회할 개수", example = "10") @RequestParam int numOfRows,
-            @Parameter(description = "기준 연월 ", example = "202506") @RequestParam String baseYm,
             @Parameter(description = "시도코드", example = "11") @RequestParam String areaCd,
             @Parameter(description = "시군구코드", example = "110") @RequestParam String sigunguCd,
-            @Parameter(description = "관광지명", example = "경복궁") @RequestParam String keyword) {
+            @Parameter(description = "관광지명", example = "경복궁") @RequestParam String baseSpot) {
         try {
-            return ResponseEntity.ok(relatedTourService.getRelatedTouristSpots(numOfRows, baseYm, areaCd, sigunguCd, keyword));
+            return ResponseEntity.ok(relatedTourService.getRelatedTouristSpots(areaCd, sigunguCd, baseSpot));
         } catch (Exception e) {
             return getErrorResponse(e);
         }
