@@ -3,8 +3,10 @@ package com.project.tourpicture.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.tourpicture.dao.KeywordBasedTourist;
+import com.project.tourpicture.dao.LclsSystemCd;
 import com.project.tourpicture.dto.KeywordBasedTouristDTO;
 import com.project.tourpicture.repository.KeywordBasedTouristRepository;
+import com.project.tourpicture.repository.LclsSystemCdRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class KeywordBasedTouristService {
     private final KeywordBasedTouristRepository keywordBaseRepo;
+    private final LclsSystemCdRepository lclsSystemCdRepo;
 
     @Value("${api.key}")
     private String apiKey;
@@ -33,6 +38,8 @@ public class KeywordBasedTouristService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+
+    private final Map<String,String> cache = new ConcurrentHashMap<>();
 
     // 키워드 기반 관광지 DTO 반환 메서드
     public List<KeywordBasedTouristDTO> getKeywordBasedTourists(String keyword) {
@@ -115,8 +122,18 @@ public class KeywordBasedTouristService {
         }
     }
 
+
+    private String resolveCodeName(String code) {
+        if (code == null) return null;
+        return cache.computeIfAbsent(code, k ->
+                lclsSystemCdRepo.findById(k).map(LclsSystemCd::getName).orElse(k)
+        );
+    }
+
     // Dto 변환
     private KeywordBasedTouristDTO toDTO(KeywordBasedTourist entity) {
+        String codeName = resolveCodeName(entity.getLclsSystemCd());
+
         return new KeywordBasedTouristDTO(
                 entity.getAddr1(),
                 entity.getAddr2(),
@@ -132,7 +149,7 @@ public class KeywordBasedTouristService {
                 entity.getMlevel(),
                 entity.getTitle(),
                 entity.getZipcode(),
-                entity.getLclsSystemCd()
+                codeName
         );
     }
 }

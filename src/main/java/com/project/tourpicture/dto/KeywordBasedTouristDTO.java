@@ -49,6 +49,6 @@ public class KeywordBasedTouristDTO {
     @Schema(description = "우편주소")
     private String zipcode;
 
-    @Schema(description = "분류 체계 코드")
-    private String lclsSystemCd;
+    @Schema(description = "분류 체계 명")
+    private String lclsSystemNm;
 }

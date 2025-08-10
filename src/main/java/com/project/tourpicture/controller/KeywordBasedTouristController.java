@@ -40,7 +40,7 @@ public class KeywordBasedTouristController {
             )
     })
     @GetMapping("/tourist-attractions")
-    public ResponseEntity<List<KeywordBasedTouristDTO>> getKeywordBasedTourist(@Parameter(description = "키워드", example = "제주 시장") @RequestParam String keyword) {
+    public ResponseEntity<List<KeywordBasedTouristDTO>> getKeywordBasedTourist(@Parameter(description = "키워드", example = "시장") @RequestParam String keyword) {
         log.info("GET /api/keyword-base/tourist-attractions 요청: keyword={}", keyword);
 
         List<KeywordBasedTouristDTO> response;
