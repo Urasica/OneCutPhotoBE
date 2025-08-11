@@ -33,8 +33,6 @@ public class KeywordBasedTouristService {
 
     @Value("${api.key}")
     private String apiKey;
-    private final String MobileOS = "WEB";
-    private final String MobileApp = "One-cut-travel";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -70,12 +68,12 @@ public class KeywordBasedTouristService {
         try {
 
 
-            String url = "http://apis.data.go.kr/B551011/KorService2/searchKeyword2"
+            String url = "https://apis.data.go.kr/B551011/KorService2/searchKeyword2"
                     + "?serviceKey=" + apiKey
                     + "&pageNo=1"
                     + "&numOfRows=100"
-                    + "&MobileOS=" + MobileOS
-                    + "&MobileApp=" + MobileApp
+                    + "&MobileOS=" + "WEB"
+                    + "&MobileApp=" + "One-cut-travel"
                     + "&keyword=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8)
                     + "&arrange=C"
                     + "&_type=json";
@@ -149,7 +147,9 @@ public class KeywordBasedTouristService {
                 entity.getMlevel(),
                 entity.getTitle(),
                 entity.getZipcode(),
-                codeName
+                codeName,
+                entity.getAreaCd(),
+                entity.getSigunguCd()
         );
     }
 }

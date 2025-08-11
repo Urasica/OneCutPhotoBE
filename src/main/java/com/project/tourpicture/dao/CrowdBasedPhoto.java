@@ -44,4 +44,13 @@ public class CrowdBasedPhoto {
 
     @Schema(description = "이미지 수정일")
     private String modifiedTime;
+
+    @Schema(description = "컨텐츠 타입 Id")
+    private String contentTypeId;
+
+    @Schema(description = "X 좌표")
+    private String mapX;
+
+    @Schema(description = "Y 좌표")
+    private String mapY;
 }

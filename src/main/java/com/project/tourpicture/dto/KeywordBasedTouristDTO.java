@@ -51,4 +51,10 @@ public class KeywordBasedTouristDTO {
 
     @Schema(description = "분류 체계 명")
     private String lclsSystemNm;
+
+    @Schema(description = "시도 코드")
+    private String areaCd;
+
+    @Schema(description = "시군구 코드")
+    private String sigunguCd;
 }

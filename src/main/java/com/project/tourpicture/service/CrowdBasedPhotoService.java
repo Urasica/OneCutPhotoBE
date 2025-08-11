@@ -86,6 +86,9 @@ public class CrowdBasedPhotoService {
                     .imageUrl(spot.getFirstImage())
                     .cpyrhtDivCd(spot.getCpyrhtDivCd())
                     .modifiedTime(spot.getModifiedTime())
+                    .mapX(spot.getMapX())
+                    .mapY(spot.getMapY())
+                    .contentTypeId(spot.getContentTypeId())
                     .build();
 
             try {
