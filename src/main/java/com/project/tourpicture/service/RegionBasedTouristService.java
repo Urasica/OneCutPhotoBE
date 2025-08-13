@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class RegionBasedTouristService {
     private final ObjectMapper objectMapper;
 
     // 지역 기반 관광지 DTO 반환 메서드
+    @Transactional
     public List<RegionBasedTouristDTO> getRegionBasedTourists(String areaCd, String sigunguCd) {
         List<RegionBasedTourist> cachedData = regionBaseRepo.findByAreaCdAndSigunguCd(areaCd, sigunguCd);
 
@@ -54,6 +56,7 @@ public class RegionBasedTouristService {
     }
 
     // 지역 기반 관광지 엔티티 반환 메서드
+    @Transactional
     public List<RegionBasedTourist> getRegionBasedTouristsEntity(String areaCd, String sigunguCd) {
         System.out.println(areaCd + " " + sigunguCd);
         List<RegionBasedTourist> cachedData = regionBaseRepo.findByAreaCdAndSigunguCd(areaCd, sigunguCd);

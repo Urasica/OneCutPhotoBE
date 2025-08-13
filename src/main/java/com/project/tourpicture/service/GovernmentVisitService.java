@@ -6,6 +6,7 @@ import com.project.tourpicture.repository.BasicLocalGovernmentFocusInfoRepositor
 import com.project.tourpicture.repository.GovernmentVisitInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ public class GovernmentVisitService {
 
     private final GovernmentVisitInfoRepository governmentVisitInfoRepository;
 
+    @Transactional
     public void VisitTouristUpdate() {
         // 시군구 기준으로 그룹화 및 관광객 수 합산
         Map<String, List<BasicLocalGovernmentFocusInfo>> grouped = basicLocalGovernmentFocusInfoRepository.findAll().stream()

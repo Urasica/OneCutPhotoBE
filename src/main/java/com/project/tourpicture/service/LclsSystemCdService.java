@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class LclsSystemCdService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public void fetchLclsSystemCd() {
         try {
             String url = "https://apis.data.go.kr/B551011/KorService2/lclsSystmCode2"

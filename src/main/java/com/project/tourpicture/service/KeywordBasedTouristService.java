@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class KeywordBasedTouristService {
     private final Map<String,String> cache = new ConcurrentHashMap<>();
 
     // 키워드 기반 관광지 DTO 반환 메서드
+    @Transactional
     public List<KeywordBasedTouristDTO> getKeywordBasedTourists(String keyword) {
         List<KeywordBasedTourist> cachedData = keywordBaseRepo.findByKeyword(keyword);
 

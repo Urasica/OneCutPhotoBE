@@ -120,6 +120,7 @@ public class LocalGovernmentFocusService {
 
 
     // 기초 지자체 집중률 조회
+    @Transactional
     public void fetchBasicLocalGovernmentFocus() {
         try {
             String day = LocalDate.now(ZoneId.of("Asia/Seoul"))

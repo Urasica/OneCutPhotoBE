@@ -36,6 +36,7 @@ public class AreaService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public void fetchAreaCd() {
         try {
             String url = "https://apis.data.go.kr/B551011/KorService2/ldongCode2"
@@ -85,7 +86,7 @@ public class AreaService {
                 String url = "https://apis.data.go.kr/B551011/KorService2/ldongCode2"
                         + "?serviceKey=" + apiKey
                         + "&pageNo=1"
-                        + "&numOfRows=30"
+                        + "&numOfRows=60"
                         + "&MobileOS=" + MobileOS
                         + "&MobileApp=" + MobileApp
                         + "&lDongRegnCd=" + areaCd.getAreaCd()
