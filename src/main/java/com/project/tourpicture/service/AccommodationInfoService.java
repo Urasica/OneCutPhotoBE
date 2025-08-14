@@ -2,7 +2,7 @@ package com.project.tourpicture.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.project.tourpicture.dto.AccommodationInfoDTO;
+import com.project.tourpicture.dto.AccommodationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class AccommodationInfoService {
     private String serviceKey;
 
     // 해당 지역의 숙박 리스트 제공
-    public List<AccommodationInfoDTO> getAccommodations(String areaCode, String sigunguCode, int numOfRows) {
+    public List<AccommodationDTO> getAccommodations(String areaCode, String sigunguCode, int numOfRows) {
 
         URI uri = UriComponentsBuilder.fromUriString("https://apis.data.go.kr/B551011/KorService2/searchStay2")
                 .queryParam("serviceKey", serviceKey)
@@ -49,12 +49,12 @@ public class AccommodationInfoService {
         }
     }
 
-    private List<AccommodationInfoDTO> parseAccommodationInfoResponse(String json) throws JsonProcessingException {
+    private List<AccommodationDTO> parseAccommodationInfoResponse(String json) throws JsonProcessingException {
         JsonNode items = getItemsNode(json);
-        List<AccommodationInfoDTO> results = new ArrayList<>();
+        List<AccommodationDTO> results = new ArrayList<>();
 
         for (JsonNode item : items) {
-            AccommodationInfoDTO dto = new AccommodationInfoDTO();
+            AccommodationDTO dto = new AccommodationDTO();
             dto.setName(item.path("title").asText());
             dto.setAddress(item.path("addr1").asText());
             dto.setMapX(item.path("mapx").asText());

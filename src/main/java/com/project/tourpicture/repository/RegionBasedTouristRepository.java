@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface RegionBasedTouristRepository extends JpaRepository<RegionBasedTourist, String> {
     List<RegionBasedTourist> findByAreaCdAndSigunguCd(String areaCd, String sigunguCd);
-    Optional<RegionBasedTourist> findByTitle(String title);
     void deleteByAreaCdAndSigunguCd(String areaCd, String sigunguCd);
+    List<RegionBasedTourist> findByAreaCdAndSigunguCdAndContentTypeId(String areaCd, String sigunguCd, String contentTypeId);
+    void deleteByAreaCdAndSigunguCdAndContentTypeId(String areaCd, String sigunguCd, String contentTypeId);
+    Optional<RegionBasedTourist> findByContentId(String contentId);
 }

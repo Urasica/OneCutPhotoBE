@@ -86,7 +86,7 @@ public class RegionBasedTouristService {
     }
 
     // 지역 기반 관광지 조회 및 저장 메서드
-    private List<RegionBasedTourist> fetchAndSaveTouristData(String areaCd, String sigunguCd, int contentTypeId) {
+    public List<RegionBasedTourist> fetchAndSaveTouristData(String areaCd, String sigunguCd, int contentTypeId) {
         try {
             String url = "http://apis.data.go.kr/B551011/KorService2/areaBasedList2"
                     + "?serviceKey=" + apiKey
