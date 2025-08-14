@@ -19,7 +19,7 @@ import static com.project.tourpicture.util.AppUtils.getItemsNode;
 
 /**
  * 관광지 카테고리별 소개 정보 조회
- * 관광지(12), 문화시설(14), 행사(15), 여행코스(25), 레포츠(28), 쇼핑(38)
+ * 관광지(12), 문화시설(14), 여행코스(25), 쇼핑(38)
  */
 @Service
 @RequiredArgsConstructor
@@ -87,47 +87,6 @@ public class TourIntroService {
                     );
                     result.add(dto);
                 }
-                case "15" -> { //행사
-                    EventIntroDTO dto = createEventIntroDTO(
-                            item.path("agelimit").asText(),
-                            item.path("bookingplace").asText(),
-                            item.path("eventenddate").asText(),
-                            item.path("eventhomepage").asText(),
-                            item.path("eventplace").asText(),
-                            item.path("eventstartdate").asText(),
-                            item.path("playtime").asText(),
-                            item.path("spendtimefestival").asText(),
-                            item.path("sponsor1").asText(),
-                            item.path("sponsor1tel").asText(),
-                            item.path("usetimefestival").asText()
-                    );
-                    result.add(dto);
-                }
-                case "25" -> { //여행코스
-                    TourCourseIntroDTO dto = createTourCourseIntroDTO(
-                            item.path("distance").asText(),
-                            item.path("infocentertourcourse").asText(),
-                            item.path("schedule").asText(),
-                            item.path("taketime").asText(),
-                            item.path("theme").asText()
-                    );
-                    result.add(dto);
-                }
-                case "28" -> { //레포츠
-                    LeportsIntroDTO dto = createLeportsIntroDTO(
-                            item.path("chkpetleports").asText(),
-                            item.path("expagerangeleports").asText(),
-                            item.path("infocenterleports").asText(),
-                            item.path("openperiod").asText(),
-                            item.path("parkingleports").asText(),
-                            item.path("parkingfeeleports").asText(),
-                            item.path("reservation").asText(),
-                            item.path("restdateleports").asText(),
-                            item.path("usefeeleports").asText(),
-                            item.path("usetimeleports").asText()
-                    );
-                    result.add(dto);
-                }
                 case "38" -> { //쇼핑
                     ShoppingIntroDTO dto = createShoppingIntroDTO(
                             item.path("chkpetshopping").asText(),
@@ -186,57 +145,6 @@ public class TourIntroService {
         dto.setUseFee(useFee);
         dto.setUseTime(useTime);
         dto.setSpendTime(spendTime);
-        return dto;
-    }
-
-    // 행사/공연/축제 DTO
-    public EventIntroDTO createEventIntroDTO(String ageLimit, String bookingPlace, String eventEndDate,
-                                             String eventHomepage, String eventPlace, String eventStartDate,
-                                             String playTime, String spendTime, String sponsor,
-                                             String sponsorTel, String useFee) {
-        EventIntroDTO dto = new EventIntroDTO();
-        dto.setAgeLimit(ageLimit);
-        dto.setBookingPlace(bookingPlace);
-        dto.setEventEndDate(eventEndDate);
-        dto.setEventHomepage(eventHomepage);
-        dto.setEventPlace(eventPlace);
-        dto.setEventStartDate(eventStartDate);
-        dto.setPlayTime(playTime);
-        dto.setSpendTime(spendTime);
-        dto.setSponsor(sponsor);
-        dto.setSponsorTel(sponsorTel);
-        dto.setUseFee(useFee);
-        return dto;
-    }
-
-    // 여행코스 DTO
-    public TourCourseIntroDTO createTourCourseIntroDTO(String distance, String infoCenter, String schedule,
-                                                       String takeTime, String theme) {
-        TourCourseIntroDTO dto = new TourCourseIntroDTO();
-        dto.setDistance(distance);
-        dto.setInfoCenter(infoCenter);
-        dto.setSchedule(schedule);
-        dto.setTakeTime(takeTime);
-        dto.setTheme(theme);
-        return dto;
-    }
-
-    // 레포츠 DTO
-    public LeportsIntroDTO createLeportsIntroDTO(String chkPet, String expAgeRange, String infoCenter,
-                                                 String openPeriod, String parking, String parkingFee,
-                                                 String reservation, String restDate, String useFee,
-                                                 String useTime) {
-        LeportsIntroDTO dto = new LeportsIntroDTO();
-        dto.setChkPet(chkPet);
-        dto.setExpAgeRange(expAgeRange);
-        dto.setInfoCenter(infoCenter);
-        dto.setOpenPeriod(openPeriod);
-        dto.setParking(parking);
-        dto.setParkingFee(parkingFee);
-        dto.setReservation(reservation);
-        dto.setRestDate(restDate);
-        dto.setUseFee(useFee);
-        dto.setUseTime(useTime);
         return dto;
     }
 

@@ -20,10 +20,11 @@ public class TourCourseRecommendationService {
     private final RegionBasedTouristRepository regionBasedTouristRepository;
 
     // 추천 코스 조회(거리 기준)
-    public List<TourCourseItemDTO> getCourseByDistance(String startSpot, String areaCode, String sigunguCode, int numOfCourse) {
-        RegionBasedTourist startSpotInfo = getTourInfo(startSpot, areaCode, sigunguCode);
+    public List<TourCourseItemDTO> getCourseByDistance(String contentId, String areaCode, String sigunguCode, int numOfCourse) {
+        RegionBasedTourist startSpotInfo = getTourInfo(contentId, areaCode, sigunguCode);
         List<RegionBasedTourist> spotInfos = getRegionTouristSpots(areaCode, sigunguCode); //해당 지역의 모든 관광지
 
+        String startSpot = startSpotInfo.getTitle();
         return buildCourseByDistance(startSpot, startSpotInfo, spotInfos, numOfCourse);
     }
 
@@ -71,9 +72,9 @@ public class TourCourseRecommendationService {
     }
 
     // 관광지 정보 조회
-    private RegionBasedTourist getTourInfo(String spot, String areaCode, String sigunguCode) {
+    private RegionBasedTourist getTourInfo(String contentId, String areaCode, String sigunguCode) {
         getRegionTouristSpots(areaCode, sigunguCode);
-        return regionBasedTouristRepository.findByTitle(spot)
+        return regionBasedTouristRepository.findByContentId(contentId)
                 .orElseThrow(() -> new NotFoundException("해당 관광지의 위치 정보를 찾을 수 없어 코스 추천 불가"));
     }
 
