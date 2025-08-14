@@ -46,9 +46,10 @@ public class RegionBasedTouristController {
 
         List<RegionBasedTouristDTO> response;
 
-        response = regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd);
+        response = regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 12);
+        response.addAll(regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 14));
 
-        if (response == null || response.isEmpty()) {
+        if (response.isEmpty()) {
             log.warn("지역 기반 관광지 데이터 없음 → 404 반환");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Collections.emptyList());

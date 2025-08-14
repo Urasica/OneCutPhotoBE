@@ -27,27 +27,25 @@ public class RegionBasedTouristService {
 
     @Value("${api.key}")
     private String apiKey;
-    private final String MobileOS = "WEB";
-    private final String MobileApp = "One-cut-travel";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
     // 지역 기반 관광지 DTO 반환 메서드
     @Transactional
-    public List<RegionBasedTouristDTO> getRegionBasedTourists(String areaCd, String sigunguCd) {
-        List<RegionBasedTourist> cachedData = regionBaseRepo.findByAreaCdAndSigunguCd(areaCd, sigunguCd);
+    public List<RegionBasedTouristDTO> getRegionBasedTourists(String areaCd, String sigunguCd, int contentTypeId) {
+        List<RegionBasedTourist> cachedData = regionBaseRepo.findByAreaCdAndSigunguCdAndContentTypeId(areaCd, sigunguCd, String.valueOf(contentTypeId));
 
         // 데이터 없으면 요청
         if (cachedData.isEmpty()) {
-            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
+            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, contentTypeId);
         }
 
         // 1주일 이상된 경우 갱신
         LocalDateTime lastUpdated = cachedData.get(0).getUpdatedAt();
         if (lastUpdated.isBefore(LocalDateTime.now().minusDays(7))) {
-            regionBaseRepo.deleteByAreaCdAndSigunguCd(areaCd, sigunguCd);
-            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
+            regionBaseRepo.deleteByAreaCdAndSigunguCdAndContentTypeId(areaCd, sigunguCd, String.valueOf(contentTypeId));
+            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, contentTypeId);
         }
 
         return cachedData.stream()
@@ -57,13 +55,13 @@ public class RegionBasedTouristService {
 
     // 지역 기반 관광지 엔티티 반환 메서드
     @Transactional
-    public List<RegionBasedTourist> getRegionBasedTouristsEntity(String areaCd, String sigunguCd) {
+    public List<RegionBasedTourist> getRegionBasedTouristsEntity(String areaCd, String sigunguCd, int contentTypeId) {
         System.out.println(areaCd + " " + sigunguCd);
-        List<RegionBasedTourist> cachedData = regionBaseRepo.findByAreaCdAndSigunguCd(areaCd, sigunguCd);
+        List<RegionBasedTourist> cachedData =  regionBaseRepo.findByAreaCdAndSigunguCdAndContentTypeId(areaCd, sigunguCd, String.valueOf(contentTypeId));
 
         // 데이터 없으면 요청
         if (cachedData.isEmpty()) {
-            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
+            cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, contentTypeId);
             if (cachedData == null || cachedData.isEmpty()) {
                 log.warn("관광지 데이터를 가져올 수 없습니다: areaCd={}, sigunguCd={}", areaCd, sigunguCd);
                 return Collections.emptyList();
@@ -73,8 +71,8 @@ public class RegionBasedTouristService {
         // 1주일 이상된 경우 갱신
         LocalDateTime lastUpdated = cachedData.get(0).getUpdatedAt();
         if (lastUpdated == null || lastUpdated.isBefore(LocalDateTime.now().minusDays(7))) {
-            regionBaseRepo.deleteByAreaCdAndSigunguCd(areaCd, sigunguCd);
-            List<RegionBasedTourist> refreshedData = fetchAndSaveTouristData(areaCd, sigunguCd, 12);
+            regionBaseRepo.deleteByAreaCdAndSigunguCdAndContentTypeId(areaCd, sigunguCd, String.valueOf(contentTypeId));
+            List<RegionBasedTourist> refreshedData = fetchAndSaveTouristData(areaCd, sigunguCd, contentTypeId);
             if (refreshedData != null && !refreshedData.isEmpty()) {
                 return refreshedData;
             } else {
@@ -88,12 +86,12 @@ public class RegionBasedTouristService {
     // 지역 기반 관광지 조회 및 저장 메서드
     public List<RegionBasedTourist> fetchAndSaveTouristData(String areaCd, String sigunguCd, int contentTypeId) {
         try {
-            String url = "http://apis.data.go.kr/B551011/KorService2/areaBasedList2"
+            String url = "https://apis.data.go.kr/B551011/KorService2/areaBasedList2"
                     + "?serviceKey=" + apiKey
                     + "&pageNo=1"
                     + "&numOfRows=300"
-                    + "&MobileOS=" + MobileOS
-                    + "&MobileApp=" + MobileApp
+                    + "&MobileOS=" + "WEB"
+                    + "&MobileApp=" + "One-cut-travel"
                     + "&contentTypeId=" + contentTypeId
                     + "&lDongRegnCd=" + areaCd
                     + "&lDongSignguCd=" + sigunguCd
@@ -116,7 +114,7 @@ public class RegionBasedTouristService {
             if (dataList != null && !dataList.isEmpty()) {
                 LocalDateTime now = LocalDateTime.now();
                 List<RegionBasedTourist> filteredList = dataList.stream()
-                        .filter(t -> t.getTitle() == null || !t.getTitle().contains("회사"))
+                        .filter(t -> t.getTitle() == null || !t.getTitle().contains("회사") || t.getFirstImage() == null)
                         .peek(t -> t.setUpdatedAt(now))
                         .collect(Collectors.toList());
 

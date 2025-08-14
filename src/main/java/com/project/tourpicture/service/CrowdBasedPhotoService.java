@@ -41,7 +41,7 @@ public class CrowdBasedPhotoService {
                     .findByAreaCdAndSigunguCd(areaCd, sigunguCd);
 
             if (allSpots.isEmpty()) {
-                allSpots = regionBasedTouristService.getRegionBasedTouristsEntity(areaCd, sigunguCd);
+                allSpots = regionBasedTouristService.getRegionBasedTouristsEntity(areaCd, sigunguCd, 12);
             }
 
             List<RegionBasedTourist> filtered = allSpots.stream()
