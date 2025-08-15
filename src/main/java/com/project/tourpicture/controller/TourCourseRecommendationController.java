@@ -38,13 +38,11 @@ public class TourCourseRecommendationController {
     })
     @GetMapping("/recommend-course-distance")
     public ResponseEntity<?> getCourseByDistance(
+            @Parameter(description = "컨텐츠 ID", example = "1019041")@RequestParam String contentId,
             @Parameter(description = "시도코드", example = "11")@RequestParam String areaCd,
-            @Parameter(description = "시군구코드", example = "110")@RequestParam String sigunguCd,
-            @Parameter(description = "컨텐츠 ID", example = "2993699")@RequestParam String contentId,
-            @Parameter(description = "관광지명", example = "청와대 전망대") @RequestParam String keyword) {
+            @Parameter(description = "시군구코드", example = "110")@RequestParam String sigunguCd) {
         try {
-            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistance(
-                    areaCd, sigunguCd, contentId, keyword,4));
+            return ResponseEntity.ok(tourCourseRecommendationService.getCourseByDistance(contentId, areaCd, sigunguCd, 4));
         } catch (Exception e){
             return getErrorResponse(e);
         }
