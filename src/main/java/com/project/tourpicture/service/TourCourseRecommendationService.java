@@ -3,7 +3,6 @@ package com.project.tourpicture.service;
 import com.project.tourpicture.dao.KeywordBasedTourist;
 import com.project.tourpicture.dao.RegionBasedTourist;
 import com.project.tourpicture.dto.TourCourseItemDTO;
-import com.project.tourpicture.dto.TouristLocationDTO;
 import com.project.tourpicture.exception.NotFoundException;
 import com.project.tourpicture.repository.KeywordBasedTouristRepository;
 import com.project.tourpicture.repository.RegionBasedTouristRepository;
@@ -21,36 +20,33 @@ public class TourCourseRecommendationService {
 
     private final RegionBasedTouristService regionBasedTouristService;
     private final RegionBasedTouristRepository regionBasedTouristRepository;
-    private final KeywordBasedTouristService keywordBasedTouristService;
     private final KeywordBasedTouristRepository keywordBasedTouristRepository;
 
     // 추천 코스 조회(거리 기준)
-    public List<TourCourseItemDTO> getCourseByDistance(String areaCode, String sigunguCode, String contentId, String keyword, int numOfCourse) {
+    public List<TourCourseItemDTO> getCourseByDistance(String contentId, String areaCode, String sigunguCode, int numOfCourse) {
+        String startSpot;
+        String startSpotMapX;
+        String startSpotMapY;
 
-        TouristLocationDTO touristLocation;
         RegionBasedTourist startSpotInfo = getTourInfo(contentId, areaCode, sigunguCode);
-
-        if(startSpotInfo != null) {
-            touristLocation = new TouristLocationDTO(
-                    startSpotInfo.getTitle(),
-                    startSpotInfo.getMapX(), startSpotInfo.getMapY());
+        if (startSpotInfo != null) {
+            startSpot = startSpotInfo.getTitle();
+            startSpotMapX = startSpotInfo.getMapX();
+            startSpotMapY = startSpotInfo.getMapY();
         } else {
-            keywordBasedTouristService.getKeywordBasedTourists(keyword);
             KeywordBasedTourist keywordBasedTourist = keywordBasedTouristRepository.findByContentId(contentId)
                     .orElseThrow(() -> new NotFoundException("해당 관광지의 위치 정보를 찾을 수 없어 코스 추천 불가"));
-            touristLocation = new TouristLocationDTO(
-                    keywordBasedTourist.getTitle(),
-                    keywordBasedTourist.getMapX(), keywordBasedTourist.getMapY());
+            startSpot = keywordBasedTourist.getTitle();
+            startSpotMapX = keywordBasedTourist.getMapX();
+            startSpotMapY = keywordBasedTourist.getMapY();
         }
 
         List<RegionBasedTourist> spotInfos = getRegionTouristSpots(areaCode, sigunguCode); //해당 지역의 모든 관광지
-
-        String startSpot = touristLocation.getTitle();
-        return buildCourseByDistance(startSpot, touristLocation, spotInfos, numOfCourse);
+        return buildCourseByDistance(startSpot, startSpotMapX, startSpotMapY, spotInfos, numOfCourse);
     }
 
     // 거리 기반 코스 생성
-    private List<TourCourseItemDTO> buildCourseByDistance(String startSpot, TouristLocationDTO startSpotLocation,
+    private List<TourCourseItemDTO> buildCourseByDistance(String startSpot, String mapX, String mapY,
                                                           List<RegionBasedTourist> spots, int numOfCourse) {
         // 코스 포함 여부 체크용
         Set<String> visited = new HashSet<>();
@@ -58,10 +54,13 @@ public class TourCourseRecommendationService {
 
         // 추천 코스
         List<TourCourseItemDTO> course = new ArrayList<>();
-        TourCourseItemDTO startSpotDTO = createTourCourseDTO(startSpot, startSpotLocation.getMapX(), startSpotLocation.getMapY());
+        TourCourseItemDTO startSpotDTO = createTourCourseDTO(startSpot, mapX, mapY);
         course.add(startSpotDTO);
 
-        double[] location = getLocation(startSpotLocation);
+        double[] location = new double[]{
+                Double.parseDouble(mapX),
+                Double.parseDouble(mapY)
+        };
 
         for (int i = 0; i < numOfCourse; i++) {
             double finalCurrentX = location[0];
@@ -72,16 +71,13 @@ public class TourCourseRecommendationService {
                             getDistance(finalCurrentY, finalCurrentX,
                                     Double.parseDouble(s.getMapY()), Double.parseDouble(s.getMapX()))
                     ));
-            RegionBasedTourist nextInfo = nextSpotOptional.orElseThrow(() -> new RuntimeException("다음 관광지 없음"));
+            RegionBasedTourist nextInfo = nextSpotOptional.orElseThrow(() -> new RuntimeException("다음 관광지가 없습니다."));
 
             visited.add(nextInfo.getTitle());
             TourCourseItemDTO nextSpotDTO = createTourCourseDTO(nextInfo.getTitle(), nextInfo.getMapX(), nextInfo.getMapY());
             course.add(nextSpotDTO);
 
-            location = new double[] {
-                    Double.parseDouble(nextInfo.getMapX()),
-                    Double.parseDouble(nextInfo.getMapY())
-            };
+            location = getLocation(nextInfo);
         }
         return course;
     }
