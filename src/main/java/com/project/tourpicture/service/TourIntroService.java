@@ -19,7 +19,7 @@ import static com.project.tourpicture.util.AppUtils.getItemsNode;
 
 /**
  * 관광지 카테고리별 소개 정보 조회
- * 관광지(12), 문화시설(14), 여행코스(25), 쇼핑(38)
+ * 관광지(12), 문화시설(14)
  */
 @Service
 @RequiredArgsConstructor
@@ -87,20 +87,6 @@ public class TourIntroService {
                     );
                     result.add(dto);
                 }
-                case "38" -> { //쇼핑
-                    ShoppingIntroDTO dto = createShoppingIntroDTO(
-                            item.path("chkpetshopping").asText(),
-                            item.path("infocentershopping").asText(),
-                            item.path("opendateshopping").asText(),
-                            item.path("opentime").asText(),
-                            item.path("parkingshopping").asText(),
-                            item.path("restdateshopping").asText(),
-                            item.path("restroom").asText(),
-                            item.path("saleitem").asText(),
-                            item.path("scaleshopping").asText()
-                    );
-                    result.add(dto);
-                }
             }
         }
 
@@ -145,23 +131,6 @@ public class TourIntroService {
         dto.setUseFee(useFee);
         dto.setUseTime(useTime);
         dto.setSpendTime(spendTime);
-        return dto;
-    }
-
-    // 쇼핑 DTO
-    public ShoppingIntroDTO createShoppingIntroDTO(String chkPet, String infoCenter, String openDate,
-                                                   String openTime, String parking, String restDate,
-                                                   String restroom, String saleItem, String scaleShopping) {
-        ShoppingIntroDTO dto = new ShoppingIntroDTO();
-        dto.setChkPet(chkPet);
-        dto.setInfoCenter(infoCenter);
-        dto.setOpenDate(openDate);
-        dto.setOpenTime(openTime);
-        dto.setParking(parking);
-        dto.setRestDate(restDate);
-        dto.setRestroom(restroom);
-        dto.setSaleItem(saleItem);
-        dto.setScaleShopping(scaleShopping);
         return dto;
     }
 }
