@@ -37,9 +37,11 @@ public class RelatedTourController {
     public ResponseEntity<?> getRelatedTouristSpots(
             @Parameter(description = "시도코드", example = "11") @RequestParam String areaCd,
             @Parameter(description = "시군구코드", example = "110") @RequestParam String sigunguCd,
-            @Parameter(description = "컨텐츠 ID", example = "1019041") @RequestParam String contentId) {
+            @Parameter(description = "컨텐츠 ID", example = "2993699") @RequestParam String contentId,
+            @Parameter(description = "관광지명", example = "청와대 전망대") @RequestParam String keyword) {
         try {
-            return ResponseEntity.ok(relatedTourService.getRelatedTouristSpots(areaCd, sigunguCd, contentId));
+            return ResponseEntity.ok(relatedTourService.getRelatedTouristSpots(
+                    areaCd, sigunguCd, contentId, keyword));
         } catch (Exception e) {
             return getErrorResponse(e);
         }

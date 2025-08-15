@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.tourpicture.dao.RegionBasedTourist;
+import com.project.tourpicture.dto.TouristLocationDTO;
 import com.project.tourpicture.dto.ErrorResponse;
 import com.project.tourpicture.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class AppUtils {
     }
 
     // 관광지 경도, 위도 조회
-    public static double[] getLocation(RegionBasedTourist info) {
+    public static double[] getLocation(TouristLocationDTO info) {
         return new double[]{
                 Double.parseDouble(info.getMapX()), //경도
                 Double.parseDouble(info.getMapY())  //위도
