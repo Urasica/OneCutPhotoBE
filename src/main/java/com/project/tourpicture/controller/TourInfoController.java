@@ -56,11 +56,7 @@ public class TourInfoController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(oneOf = {
                                     TourIntroDTO.class,
-                                    CultureIntroDTO.class,
-                                    EventIntroDTO.class,
-                                    TourCourseIntroDTO.class,
-                                    LeportsIntroDTO.class,
-                                    ShoppingIntroDTO.class
+                                    CultureIntroDTO.class
                             })
                     )
             ),

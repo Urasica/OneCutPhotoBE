@@ -62,10 +62,12 @@ public class TourCourseRecommendationService {
         return course;
     }
 
-    // 해당 지역의 중심관광지 목록 조회
+    // 해당 지역의 관광지 목록 조회
     private List<RegionBasedTourist> getRegionTouristSpots(String areaCode, String sigunguCode) {
         try {
-            return regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode);
+            List<RegionBasedTourist> regionBasedTourists = regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 12);
+            regionBasedTourists.addAll(regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 14));
+            return regionBasedTourists;
         } catch (RuntimeException e) {
             throw new NotFoundException("지역코드 혹은 시군구코드 입력 오류");
         }

@@ -9,18 +9,18 @@ import lombok.Setter;
 @Schema(description = "해당 지역의 식당 정보")
 public class RestaurantDTO {
 
-    @Schema(description = "식당명", example = "")
+    @Schema(description = "식당명")
     private String name;
 
-    @Schema(description = "식당 주소", example = "")
+    @Schema(description = "식당 주소")
     private String address;
 
-    @Schema(description = "X 좌표값", example = "")
+    @Schema(description = "X 좌표값")
     private String mapX;
 
-    @Schema(description = "Y 좌표값", example = "")
+    @Schema(description = "Y 좌표값")
     private String mapY;
 
-    @Schema(description = "식당 이미지", example = "")
+    @Schema(description = "식당 이미지")
     private String imageUrl;
 }

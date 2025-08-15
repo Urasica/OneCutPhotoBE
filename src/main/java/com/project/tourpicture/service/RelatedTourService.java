@@ -24,7 +24,9 @@ public class RelatedTourService {
     public List<RelatedTourDTO> getRelatedTouristSpots(
             String areaCode, String sigunguCode, String contentId) {
 
-        List<RegionBasedTourist> regionBasedTourists = regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode);
+        List<RegionBasedTourist> regionBasedTourists = regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 12);
+        regionBasedTourists.addAll(regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 14));
+
         RegionBasedTourist baseSpotInfo = regionBasedTouristRepository.findByContentId(contentId)
                 .orElseThrow(() -> new NotFoundException("해당 관광지의 위치 정보 없음"));
 
@@ -33,7 +35,7 @@ public class RelatedTourService {
         double baseY = baseSpotLocation[1]; // 위도
 
         return regionBasedTourists.stream()
-                .filter(s -> !s.getTitle().equals(contentId))
+                .filter(s -> !s.getContentId().equals(contentId))
                 .sorted(Comparator.comparingDouble(s -> {
                     double[] location = getLocation(s);
                     return getDistance(baseY, baseX, location[1], location[0]);
