@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,11 +111,14 @@ public class RegionBasedTouristService {
             JsonNode itemArray = root.path("response").path("body").path("items").path("item");
 
             List<RegionBasedTourist> dataList = objectMapper.readerForListOf(RegionBasedTourist.class).readValue(itemArray);
+            List<RegionBasedTourist> filteredList = new ArrayList<>();
 
             if (dataList != null && !dataList.isEmpty()) {
                 LocalDateTime now = LocalDateTime.now();
-                List<RegionBasedTourist> filteredList = dataList.stream()
-                        .filter(t -> t.getTitle() == null || !t.getTitle().contains("회사") || t.getFirstImage() == null)
+                filteredList = dataList.stream()
+                        .filter(t -> (t.getTitle() == null || !t.getTitle().contains("회사")) // 제목 조건
+                                && t.getFirstImage() != null
+                                && !t.getFirstImage().trim().isEmpty())
                         .peek(t -> t.setUpdatedAt(now))
                         .collect(Collectors.toList());
 
@@ -127,7 +131,7 @@ public class RegionBasedTouristService {
                 }
             }
 
-            return dataList;
+            return filteredList;
 
         } catch (IOException e) {
             log.error("지역기반 관광지 조회 중 예외 발생: {}", e.getMessage(), e);

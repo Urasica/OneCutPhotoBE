@@ -19,9 +19,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -73,7 +71,7 @@ public class KeywordBasedTouristService {
             String url = "https://apis.data.go.kr/B551011/KorService2/searchKeyword2"
                     + "?serviceKey=" + apiKey
                     + "&pageNo=1"
-                    + "&numOfRows=100"
+                    + "&numOfRows=150"
                     + "&MobileOS=" + "WEB"
                     + "&MobileApp=" + "One-cut-travel"
                     + "&keyword=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8)
@@ -93,12 +91,14 @@ public class KeywordBasedTouristService {
 
             List<KeywordBasedTourist> dataList =
                     objectMapper.readerForListOf(KeywordBasedTourist.class).readValue(itemArray);
+            List<KeywordBasedTourist> filteredList = new ArrayList<>();
 
             if (dataList != null && !dataList.isEmpty()) {
                 LocalDateTime now = LocalDateTime.now();
+                Set<String> allowedTypes = Set.of("12", "14", "38");
 
-                List<KeywordBasedTourist> filteredList = dataList.stream()
-                        .filter(t -> t.getTitle() == null || !t.getTitle().contains("회사"))
+                filteredList = dataList.stream()
+                        .filter(t -> (t.getTitle() == null || !t.getTitle().contains("회사")) && allowedTypes.contains(t.getContentTypeId()))
                         .peek(t -> {
                             t.setUpdatedAt(now);
                             t.setKeyword(keyword);
@@ -114,7 +114,7 @@ public class KeywordBasedTouristService {
                 }
             }
 
-            return dataList;
+            return filteredList;
 
         } catch (IOException e) {
             log.error("키워드기반 관광지 조회 중 예외 발생: {}", e.getMessage(), e);

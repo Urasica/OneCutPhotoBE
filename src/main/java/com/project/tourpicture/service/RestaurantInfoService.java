@@ -46,7 +46,7 @@ public class RestaurantInfoService {
 
     // 식당 DTO 리스트 반환
     private void getRestaurantDTOList(String areaCode, String sigunguCode, List<RestaurantDTO> DTOs) {
-        List<RegionBasedTourist> regionBasedRestaurants = regionBasedTouristService.fetchAndSaveTouristData(
+        List<RegionBasedTourist> regionBasedRestaurants = regionBasedTouristService.getRegionBasedTouristsEntity(
                 areaCode, sigunguCode, 39);
 
         if (regionBasedRestaurants == null || regionBasedRestaurants.isEmpty()) {
