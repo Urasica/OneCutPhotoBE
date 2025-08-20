@@ -22,4 +22,10 @@ public class RelatedTourDTO {
 
     @Schema(description = "주소")
     private String address;
+
+    @Schema(description = "X 좌표값")
+    private String mapX;
+
+    @Schema(description = "Y 좌표값")
+    private String mapY;
 }

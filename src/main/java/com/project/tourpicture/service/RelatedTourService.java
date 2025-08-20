@@ -57,19 +57,23 @@ public class RelatedTourService {
                         s.getContentTypeId(),
                         s.getTitle(),
                         s.getFirstImage(),
-                        s.getAddr1()
+                        s.getAddr1(),
+                        s.getMapX(),
+                        s.getMapY()
                 ))
                 .toList();
     }
 
     private RelatedTourDTO createRelatedTourDTO(String contentId, String contentTypeId, String title,
-                                                String imageUrl, String address) {
+                                                String imageUrl, String address, String mapX, String mapY) {
         RelatedTourDTO relatedTourDTO = new RelatedTourDTO();
         relatedTourDTO.setContentId(contentId);
         relatedTourDTO.setContentTypeId(contentTypeId);
         relatedTourDTO.setTitle(title);
         relatedTourDTO.setImageUrl(imageUrl);
         relatedTourDTO.setAddress(address);
+        relatedTourDTO.setMapX(mapX);
+        relatedTourDTO.setMapY(mapY);
         return relatedTourDTO;
     }
 }
