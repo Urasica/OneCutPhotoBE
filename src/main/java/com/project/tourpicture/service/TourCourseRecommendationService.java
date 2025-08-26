@@ -1,5 +1,6 @@
 package com.project.tourpicture.service;
 
+import com.project.tourpicture.dao.HubTourismEntity;
 import com.project.tourpicture.dao.KeywordBasedTourist;
 import com.project.tourpicture.dao.RegionBasedTourist;
 import com.project.tourpicture.dto.TourCourseItemDTO;
@@ -21,6 +22,7 @@ public class TourCourseRecommendationService {
     private final RegionBasedTouristService regionBasedTouristService;
     private final RegionBasedTouristRepository regionBasedTouristRepository;
     private final KeywordBasedTouristRepository keywordBasedTouristRepository;
+    private final HubTourismService hubTourismService;
 
     // 추천 코스 조회(거리 기준)
     public List<TourCourseItemDTO> getCourseByDistance(String contentId, String areaCode, String sigunguCode, int numOfCourse) {
@@ -41,13 +43,13 @@ public class TourCourseRecommendationService {
             startSpotMapY = keywordBasedTourist.getMapY();
         }
 
-        List<RegionBasedTourist> spotInfos = getRegionTouristSpots(areaCode, sigunguCode); //해당 지역의 모든 관광지
-        return buildCourseByDistance(startSpot, startSpotMapX, startSpotMapY, spotInfos, numOfCourse);
+        List<HubTourismEntity> hubTourismList = hubTourismService.getHubTourismWithRanking(areaCode, sigunguCode);// 관광지 리스트
+        return buildCourseByDistance(startSpot, startSpotMapX, startSpotMapY, hubTourismList , numOfCourse);
     }
 
     // 거리 기반 코스 생성
     private List<TourCourseItemDTO> buildCourseByDistance(String startSpot, String mapX, String mapY,
-                                                          List<RegionBasedTourist> spots, int numOfCourse) {
+                                                          List<HubTourismEntity> spots, int numOfCourse) {
         // 코스 포함 여부 체크용
         Set<String> visited = new HashSet<>();
         visited.add(startSpot);
@@ -65,16 +67,17 @@ public class TourCourseRecommendationService {
         for (int i = 0; i < numOfCourse; i++) {
             double finalCurrentX = location[0];
             double finalCurrentY = location[1];
-            Optional<RegionBasedTourist> nextSpotOptional = spots.stream()
-                    .filter(s -> !visited.contains(s.getTitle()))
+            Optional<HubTourismEntity> nextSpotOptional = spots.stream()
+                    .filter(s -> !visited.contains(s.getMatchedTourist().getTitle()))
                     .min(Comparator.comparingDouble(s ->
                             getDistance(finalCurrentY, finalCurrentX,
-                                    Double.parseDouble(s.getMapY()), Double.parseDouble(s.getMapX()))
+                                    Double.parseDouble(s.getMapX()), Double.parseDouble(s.getMapX()))
                     ));
-            RegionBasedTourist nextInfo = nextSpotOptional.orElseThrow(() -> new RuntimeException("다음 관광지가 없습니다."));
+            HubTourismEntity nextInfo = nextSpotOptional.orElseThrow(() -> new RuntimeException("다음 관광지가 없습니다."));
 
-            visited.add(nextInfo.getTitle());
-            TourCourseItemDTO nextSpotDTO = createTourCourseDTO(nextInfo.getTitle(), nextInfo.getMapX(), nextInfo.getMapY());
+            String nextSpotName = nextInfo.getMatchedTourist().getTitle();
+            visited.add(nextSpotName);
+            TourCourseItemDTO nextSpotDTO = createTourCourseDTO(nextSpotName, nextInfo.getMapX(), nextInfo.getMapY());
             course.add(nextSpotDTO);
 
             location = getLocation(nextInfo);
@@ -83,11 +86,10 @@ public class TourCourseRecommendationService {
     }
 
     // 해당 지역의 관광지 목록 조회
-    private List<RegionBasedTourist> getRegionTouristSpots(String areaCode, String sigunguCode) {
+    private void getRegionTouristSpots(String areaCode, String sigunguCode) {
         try {
             List<RegionBasedTourist> regionBasedTourists = regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 12);
             regionBasedTourists.addAll(regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 14));
-            return regionBasedTourists;
         } catch (RuntimeException e) {
             throw new NotFoundException("지역코드 혹은 시군구코드 입력 오류");
         }
