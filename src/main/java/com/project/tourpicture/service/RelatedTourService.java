@@ -1,5 +1,6 @@
 package com.project.tourpicture.service;
 
+import com.project.tourpicture.dao.HubTourismEntity;
 import com.project.tourpicture.dao.KeywordBasedTourist;
 import com.project.tourpicture.dao.RegionBasedTourist;
 import com.project.tourpicture.dto.RelatedTourDTO;
@@ -20,8 +21,8 @@ import static com.project.tourpicture.util.AppUtils.getLocation;
 public class RelatedTourService {
 
     private final RegionBasedTouristRepository regionBasedTouristRepository;
-    private final RegionBasedTouristService regionBasedTouristService;
     private final KeywordBasedTouristRepository keywordBasedTouristRepository;
+    private final HubTourismService hubTourismService;
 
     // 관광지별 연관관광지 조회
     public List<RelatedTourDTO> getRelatedTouristSpots(
@@ -30,8 +31,8 @@ public class RelatedTourService {
         double baseX;
         double baseY;
 
-        List<RegionBasedTourist> regionBasedTourists = regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 12);
-        regionBasedTourists.addAll(regionBasedTouristService.getRegionBasedTouristsEntity(areaCode, sigunguCode, 14));
+        // 관광지 리스트
+        List<HubTourismEntity> hubTourismList = hubTourismService.getHubTourismWithRanking(areaCode, sigunguCode);
 
         RegionBasedTourist baseSpotInfo = regionBasedTouristRepository.findByContentId(contentId);
 
@@ -45,19 +46,19 @@ public class RelatedTourService {
             baseY = Double.parseDouble(keywordBasedTourist.getMapY()); //위도
         }
 
-        return regionBasedTourists.stream()
-                .filter(s -> !s.getContentId().equals(contentId))
+        return hubTourismList.stream()
+                .filter(s -> !s.getMatchedTourist().getContentId().equals(contentId))
                 .sorted(Comparator.comparingDouble(s -> {
                     double[] location = getLocation(s);
                     return getDistance(baseY, baseX, location[1], location[0]);
                 }))
                 .limit(30)
                 .map(s -> createRelatedTourDTO(
-                        s.getContentId(),
-                        s.getContentTypeId(),
-                        s.getTitle(),
-                        s.getFirstImage(),
-                        s.getAddr1(),
+                        s.getMatchedTourist().getContentId(),
+                        s.getMatchedTourist().getContentTypeId(),
+                        s.getHubTatsNm(),
+                        s.getMatchedTourist().getFirstImage(),
+                        s.getMatchedTourist().getAddr1(),
                         s.getMapX(),
                         s.getMapY()
                 ))
