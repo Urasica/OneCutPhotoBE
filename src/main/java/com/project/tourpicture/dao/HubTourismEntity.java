@@ -24,6 +24,8 @@ public class HubTourismEntity {
     private String hubTatsNm;
     private Integer hubRank;
 
+    private String matchedContentId;
+
     @Transient
     private RegionBasedTouristDTO matchedTourist;
 }

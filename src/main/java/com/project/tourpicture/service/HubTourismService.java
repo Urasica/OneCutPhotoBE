@@ -21,6 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -58,16 +61,31 @@ public class HubTourismService {
             return Collections.emptyList();
         }
 
-        // RegionBasedTouristDTO 후보 조회
-        List<RegionBasedTouristDTO> candidates = regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 12);
-        candidates.addAll(regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 14));
+        boolean anyMatched = hubList.stream().anyMatch(h -> h.getMatchedContentId() != null);
 
-        // 보수적 매칭 수행
-        for (HubTourismEntity hub : hubList) {
-            if (hub.getMatchedTourist() == null) {
+        if (!anyMatched) {
+            // 이번 달 첫 매칭 → 후보 조회 후 safeMatch 수행
+            List<RegionBasedTouristDTO> candidates = regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 12);
+            candidates.addAll(regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 14));
+
+            for (HubTourismEntity hub : hubList) {
                 RegionBasedTouristDTO matched = safeMatch(hub, candidates);
-                hub.setMatchedTourist(matched);assert matched != null;
-                entityRepository.save(hub);
+                if (matched != null) {
+                    hub.setMatchedContentId(matched.getContentId());
+                    entityRepository.save(hub);
+                }
+            }
+        }
+
+        // 반환 시 matchedTourist DTO 주입
+        Map<String, RegionBasedTouristDTO> dtoMap = Stream.concat(
+                regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 12).stream(),
+                regionBasedTouristService.getRegionBasedTourists(areaCd, sigunguCd, 14).stream()
+        ).collect(Collectors.toMap(RegionBasedTouristDTO::getContentId, dto -> dto, (a, b) -> a));
+
+        for (HubTourismEntity hub : hubList) {
+            if (hub.getMatchedContentId() != null) {
+                hub.setMatchedTourist(dtoMap.get(hub.getMatchedContentId()));
             }
         }
 
