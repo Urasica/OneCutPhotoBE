@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,35 +58,41 @@ public class RegionBasedTouristService {
     // 지역 기반 관광지 엔티티 반환 메서드
     @Transactional
     public List<RegionBasedTourist> getRegionBasedTouristsEntity(String areaCd, String sigunguCd, int contentTypeId) {
-        System.out.println(areaCd + " " + sigunguCd);
-        List<RegionBasedTourist> cachedData =  regionBaseRepo.findByAreaCdAndSigunguCdAndContentTypeId(areaCd, sigunguCd, String.valueOf(contentTypeId));
+        List<RegionBasedTourist> cachedData =
+                regionBaseRepo.findByAreaCdAndSigunguCdAndContentTypeId(areaCd, sigunguCd, String.valueOf(contentTypeId));
 
-        // 데이터 없으면 요청
+        // 캐시 데이터가 없으면 API 요청 후 저장
         if (cachedData.isEmpty()) {
             cachedData = fetchAndSaveTouristData(areaCd, sigunguCd, contentTypeId);
-            if (cachedData == null || cachedData.isEmpty()) {
+            if (cachedData.isEmpty()) {
                 log.warn("관광지 데이터를 가져올 수 없습니다: areaCd={}, sigunguCd={}", areaCd, sigunguCd);
                 return Collections.emptyList();
             }
         }
 
-        // 1주일 이상된 경우 갱신
-        LocalDateTime lastUpdated = cachedData.get(0).getUpdatedAt();
-        if (lastUpdated == null || lastUpdated.isBefore(LocalDateTime.now().minusDays(7))) {
+        // 가장 최근 updatedAt 기준으로 1주일 경과 체크
+        LocalDateTime lastUpdated = cachedData.stream()
+                .map(RegionBasedTourist::getUpdatedAt)
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MIN);
+
+        if (lastUpdated.isBefore(LocalDateTime.now().minusDays(7))) {
+            // 기존 데이터 삭제 후 새로 갱신
             regionBaseRepo.deleteByAreaCdAndSigunguCdAndContentTypeId(areaCd, sigunguCd, String.valueOf(contentTypeId));
             List<RegionBasedTourist> refreshedData = fetchAndSaveTouristData(areaCd, sigunguCd, contentTypeId);
-            if (refreshedData != null && !refreshedData.isEmpty()) {
-                return refreshedData;
-            } else {
+
+            if (refreshedData.isEmpty()) {
                 return Collections.emptyList();
             }
+            return refreshedData;
         }
 
         return cachedData;
     }
 
     // 지역 기반 관광지 조회 및 저장 메서드
-    public List<RegionBasedTourist> fetchAndSaveTouristData(String areaCd, String sigunguCd, int contentTypeId) {
+    private List<RegionBasedTourist> fetchAndSaveTouristData(String areaCd, String sigunguCd, int contentTypeId) {
         try {
             String url = "https://apis.data.go.kr/B551011/KorService2/areaBasedList2"
                     + "?serviceKey=" + apiKey
