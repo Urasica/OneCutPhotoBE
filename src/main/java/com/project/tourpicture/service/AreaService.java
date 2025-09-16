@@ -31,7 +31,7 @@ public class AreaService {
     @Value("${api.key}")
     private String apiKey;
     private final String MobileOS = "WEB";
-    private final String MobileApp = "One-cut-travel";
+    private final String MobileApp = "hancuttrip";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;

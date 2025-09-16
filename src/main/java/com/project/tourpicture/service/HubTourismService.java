@@ -159,7 +159,7 @@ public class HubTourismService {
                     + "&pageNo=1"
                     + "&numOfRows=300"
                     + "&MobileOS=" + "WEB"
-                    + "&MobileApp=" + "One-cut-travel"
+                    + "&MobileApp=" + "hancuttrip"
                     + "&baseYm=" + day
                     + "&areaCd=" + areaCd
                     + "&signguCd=" + sigunguCd

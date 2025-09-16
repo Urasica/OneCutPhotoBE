@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface GovernmentVisitInfoRepository extends JpaRepository<GovernmentVisitInfo, String> {
     List<GovernmentVisitInfo> findTop50ByOrderByTouNumAsc();
+
+    List<GovernmentVisitInfo> findTop50ByOrderByTouNumDesc();
 }

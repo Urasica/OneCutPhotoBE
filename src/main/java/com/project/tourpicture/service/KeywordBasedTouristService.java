@@ -73,7 +73,7 @@ public class KeywordBasedTouristService {
                     + "&pageNo=1"
                     + "&numOfRows=150"
                     + "&MobileOS=" + "WEB"
-                    + "&MobileApp=" + "One-cut-travel"
+                    + "&MobileApp=" + "hancuttrip"
                     + "&keyword=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8)
                     + "&arrange=C"
                     + "&_type=json";

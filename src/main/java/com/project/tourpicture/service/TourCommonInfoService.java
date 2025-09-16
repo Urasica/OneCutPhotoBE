@@ -36,7 +36,7 @@ public class TourCommonInfoService {
         URI uri = UriComponentsBuilder.fromUriString("https://apis.data.go.kr/B551011/KorService2/detailCommon2")
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("MobileOS", "WEB")
-                .queryParam("MobileApp", "TourApp")
+                .queryParam("MobileApp", "hancuttrip")
                 .queryParam("contentId", contentId)
                 .queryParam("numOfRows", 1)
                 .queryParam("pageNo", 1)

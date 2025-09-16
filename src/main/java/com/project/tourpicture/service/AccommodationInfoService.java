@@ -33,7 +33,7 @@ public class AccommodationInfoService {
                 .queryParam("numOfRows", numOfRows)
                 .queryParam("pageNo", 1)
                 .queryParam("MobileOS", "WEB")
-                .queryParam("MobileApp", "TourApp")
+                .queryParam("MobileApp", "hancuttrip")
                 .queryParam("arrange", "C")
                 .queryParam("lDongRegnCd", areaCode)
                 .queryParam("lDongSignguCd", sigunguCode)

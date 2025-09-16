@@ -99,7 +99,7 @@ public class RegionBasedTouristService {
                     + "&pageNo=1"
                     + "&numOfRows=300"
                     + "&MobileOS=" + "WEB"
-                    + "&MobileApp=" + "One-cut-travel"
+                    + "&MobileApp=" + "hancuttrip"
                     + "&contentTypeId=" + contentTypeId
                     + "&lDongRegnCd=" + areaCd
                     + "&lDongSignguCd=" + sigunguCd

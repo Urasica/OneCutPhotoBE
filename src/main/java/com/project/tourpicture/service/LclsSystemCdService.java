@@ -35,7 +35,7 @@ public class LclsSystemCdService {
                     + "&pageNo=1"
                     + "&numOfRows=20"
                     + "&MobileOS=" + "WEB"
-                    + "&MobileApp=" + "One-cut-travel"
+                    + "&MobileApp=" + "hancuttrip"
                     + "&lclsSystm1=&lclsSystm2=&lclsSystm3="
                     + "&lclsSystmListYn=N"
                     + "&_type=json";
